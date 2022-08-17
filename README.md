@@ -1,13 +1,16 @@
 # Software-Engineering
 
 3815ICT Group Project
+#### Contributers
+[Isaac](https://github.com/Isaac-Pollack) | 
+[Clay](https://github.com/clayajohnson)
 
-## INSTALL
+## Installation
 
 Clone the repo, change into the directory and ensure [Node](https://nodejs.org/en/) is installed locally for you before continuing.\
-Run `npm install` to install dependencies\
+Run `npm install` to install dependencies
 
-## FORMATTING
+## Formatting Code
 
 Use `npx prettier --write src/App.js` to format just the main app.\
 Or `npx prettier --write .` for all files.
