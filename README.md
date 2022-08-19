@@ -1,6 +1,6 @@
 # Software-Engineering
 
-3815ICT Group Project
+2805ICT/3815ICT Group Project
 #### Contributers
 [Isaac](https://github.com/Isaac-Pollack) | 
 [Clay](https://github.com/clayajohnson)
@@ -19,6 +19,11 @@ Or `npx prettier --write .` for all files.
 
 [styled-components](https://styled-components.com/)\
 [react-router-DOM](https://reactrouter.com/)
+
+## Recommended VSCode Extensions for development
+
+[Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)\
+[Todo Tree](https://marketplace.visualstudio.com/items?itemName=Gruntfuggly.todo-tree)
 
 ## Available Scripts
 
