@@ -1,11 +1,12 @@
-import React from 'react';
+import React from 'react'
 import { Routes, Route, Outlet, Link } from 'react-router-dom'
 
 //Routes
-import Home from "./routes/Home";
-import Play from "./routes/Play";
-import Configure from "./routes/Configure";
-import Hiscores from "./routes/Hiscores";
+import Home from './routes/Home'
+import Play from './routes/Play'
+import Configure from './routes/Configure'
+import Hiscores from './routes/Hiscores'
+import { FaGithub } from 'react-icons/fa'
 
 export default function App() {
   return (
@@ -37,26 +38,35 @@ function Layout() {
     <div className='Nav'>
       {/* A "layout route" is a good place to put markup you want to
       share across all the pages on your site, like navigation. */}
-        <ul>
-          <li>
-            <Link to='/'>Home</Link>
-          </li>
-          <li>
-            <Link to='/play'>Play</Link>
-          </li>
-          <li>
-            <Link to='/configure'>Configure</Link>
-          </li>
-          <li>
-            <Link to='/hiscores'>Hiscores</Link>
-          </li>
-        </ul>
+      <ul>
+        <li>
+          <Link to='/'>Home</Link>
+        </li>
+        <li>
+          <Link to='/play'>Play</Link>
+        </li>
+        <li>
+          <Link to='/configure'>Configure</Link>
+        </li>
+        <li>
+          <Link to='/hiscores'>Hiscores</Link>
+        </li>
+        <li>
+          <a
+            href={'https://github.com/Isaac-Pollack/Software-Engineering'}
+            target='_blank'
+            rel='noreferrer'
+          >
+            <FaGithub></FaGithub>
+          </a>
+        </li>
+      </ul>
 
       {/* An <Outlet> renders whatever child route is currently active,
       so you can think about this <Outlet> as a placeholder for
       the child routes we defined above. */}
       <main className='Outlet'>
-      <Outlet />
+        <Outlet />
       </main>
     </div>
   )

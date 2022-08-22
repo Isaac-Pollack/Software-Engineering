@@ -1,24 +1,40 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import React from 'react'
+import PropTypes from 'prop-types'
+
+//Icons
+import { FaLinkedin, FaGithub } from 'react-icons/fa'
 
 function Card(props) {
-  const name = props.name;
-  const avatar = props.avatar;
-  const github = props.github;
-  const linkedin = props.linkedin;
+  const name = props.name
+  const avatar = props.avatar
+  const github = props.github
+  const linkedin = props.linkedin
 
   Card.propTypes = {
-    name: PropTypes.string.isRequired
+    name: PropTypes.any.isRequired,
+    avatar: PropTypes.node,
+    github: PropTypes.string,
+    linkedin: PropTypes.string,
   }
 
-    return (
-      <div className='card'>
-        <img src={avatar} />
-        <h3>{name}</h3>
-        <button href={github} className='btn'><i className='fab fa-github-square'></i></button>
-        <button href={linkedin} className='btn'><i className='fab fa-github-square'></i></button>
-      </div>
-    );
+  return (
+    <div className='card'>
+      <h3>{name}</h3>
+      <img src={avatar} width='260' height='260' alt='Avatar' />
+
+      <a href={github} target='_blank' rel='noreferrer'>
+        <button>
+          <FaGithub></FaGithub>
+        </button>
+      </a>
+
+      <a href={linkedin} target='_blank' rel='noreferrer'>
+        <button>
+          <FaLinkedin></FaLinkedin>
+        </button>
+      </a>
+    </div>
+  )
 }
 
 export default Card
