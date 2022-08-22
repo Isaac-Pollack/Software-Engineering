@@ -1,9 +1,9 @@
-import * as React from 'react';
-import { Link } from "react-router-dom";
+import * as React from 'react'
+import { Link } from 'react-router-dom'
 
 export default function Play() {
   return (
-      <div>
+    <div>
       <h1>TETRIS HERE</h1>
       <br></br>
       <b>Game Control Requirements:</b>
@@ -123,5 +123,5 @@ export default function Play() {
         <Link to='/'>Go to the home page</Link>
       </p>
     </div>
-  );
+  )
 }

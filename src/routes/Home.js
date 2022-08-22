@@ -25,27 +25,14 @@ export default function Home() {
             <button type='button'>HI-SCORES</button>
           </Link>
         </li>
-      </ol>
 
-      <p>
-        <br></br>
-        {/* TODO Dirty line breaks for now fix */}
-        <br></br>
-        <b>REQUIREMENTS:</b>
-        <ol>
-          <li>The title of Tetris</li>
-          <li>The year and course code</li>
-          <li>The list of all students in your group</li>
-          <li>An exit button to exit the program</li>
-          <li>A score button to show top 10 players with their scores</li>
-          <li>
-            A configure button. In the configure page, a player can select normal game or game with
-            extension (explain later), and can select the size of the field, which is the area the
-            blocks move and build, the block dropping speeds (levels). A player can also select AI
-            game
-          </li>
-        </ol>
-      </p>
+        <li>
+          <button type='button' onClick={window.close()}>
+            EXIT
+          </button>{' '}
+          {/* TODO Figure out if we can get this to work or scrap it, seems more work than it's worth */}
+        </li>
+      </ol>
 
       <h2 className='middle'>THE GROUP</h2>
       <div className='card_box'>
