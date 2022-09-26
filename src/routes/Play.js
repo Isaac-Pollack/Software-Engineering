@@ -1,177 +1,403 @@
-import React from 'react'
-import "./styles.css"
+import * as React from 'react'
 import { Link } from 'react-router-dom'
+import "./styles.css"
 
 
-const COLS = 10;
-const ROWS = 20;
-const BLOCK_SIZE = 30;
+// class Play extends React.Component {
+//   render() {
+//     return React.createElement('div', null, `TETRIS ${this.props.toWhat}`)
+//   }
+// }
 
-// Canvas doesnt work with react smh
-const canvas = document.getElementById('board');
-const ctx = canvas.getContext('2d');
+// const e = React.createElement;
 
-// Calculate size of canvas from constants.
-ctx.canvas.width = COLS * BLOCK_SIZE;
-ctx.canvas.height = ROWS * BLOCK_SIZE;
+// const root = ReactDOM.createRoot(document.getElementById('root'));
+// root.render(e('div', null, 'here'));
 
-// Scale blocks
-ctx.scale(BLOCK_SIZE, BLOCK_SIZE);
+function GameLoop() {
+  const script = `
+
+    function get(id)        { return document.getElementById(id);  }
+    function hide(id)       { get(id).style.visibility = 'hidden'; }
+    function show(id)       { get(id).style.visibility = null;     }
+    function html(id, html) { get(id).innerHTML = html;            }
+
+    function timestamp()           { return new Date().getTime();                             }
+    function random(min, max)      { return (min + (Math.random() * (max - min)));            }
+    function randomChoice(choices) { return choices[Math.round(random(0, choices.length-1))]; }
+
+    if (!window.requestAnimationFrame) {
+      window.requestAnimationFrame = window.webkitRequestAnimationFrame ||
+                                    window.mozRequestAnimationFrame    ||
+                                    window.oRequestAnimationFrame      ||
+                                    window.msRequestAnimationFrame     ||
+                                    function(callback, element) {
+                                      window.setTimeout(callback, 1000 / 60);
+                                    }
+    }
 
 
-export default function Play() {
-    return (
-      <body>
-        <div className="grid">
-          <canvas id="board" className="game-board"></canvas>
-          <div className="right-column">
-            <div>
-              <h1>TETRIS</h1>
-              <p>Score: <span id="score">0</span></p>
-              <p>Lines: <span id="lines">0</span></p>
-              <p>Level: <span id="level">0</span></p>
-              <canvas id="next" className="next"></canvas>
-            </div>
-            <button onClick="start()" className="start-button">Play</button>
-          </div>
-          <br></br>
-          <p>
-            <Link to='/'>Go to the home page</Link>
-          </p>
-        </div>
-      </body>
-    )
+    var KEY     = { ESC: 27, SPACE: 32, LEFT: 37, UP: 38, RIGHT: 39, DOWN: 40 },
+        DIR     = { UP: 0, RIGHT: 1, DOWN: 2, LEFT: 3, MIN: 0, MAX: 3 },
+        stats   = new Stats(),
+        canvas  = get('canvas'),
+        ctx     = canvas.getContext('2d'),
+        ucanvas = get('upcoming'),
+        uctx    = ucanvas.getContext('2d'),
+        speed   = { start: 0.6, decrement: 0.005, min: 0.1 }, // how long before piece drops by 1 row (seconds)
+        nx      = 10, // width of tetris court (in blocks)
+        ny      = 20, // height of tetris court (in blocks)
+        nu      = 5;  // width/height of upcoming preview (in blocks)
+
+
+    var dx, dy,        // pixel size of a single tetris block
+        blocks,        // 2 dimensional array (nx*ny) representing tetris court - either empty block or occupied by a 'piece'
+        actions,       // queue of user actions (inputs)
+        playing,       // true|false - game is in progress
+        dt,            // time since starting this game
+        current,       // the current piece
+        next,          // the next piece
+        score,         // the current score
+        vscore,        // the currently displayed score (it catches up to score in small chunks - like a spinning slot machine)
+        rows,          // number of completed rows in the current game
+        step;          // how long before current piece drops by 1 row
+
+
+    var i = { size: 4, blocks: [0x0F00, 0x2222, 0x00F0, 0x4444], color: 'cyan'   };
+    var j = { size: 3, blocks: [0x44C0, 0x8E00, 0x6440, 0x0E20], color: 'blue'   };
+    var l = { size: 3, blocks: [0x4460, 0x0E80, 0xC440, 0x2E00], color: 'orange' };
+    var o = { size: 2, blocks: [0xCC00, 0xCC00, 0xCC00, 0xCC00], color: 'yellow' };
+    var s = { size: 3, blocks: [0x06C0, 0x8C40, 0x6C00, 0x4620], color: 'green'  };
+    var t = { size: 3, blocks: [0x0E40, 0x4C40, 0x4E00, 0x4640], color: 'purple' };
+    var z = { size: 3, blocks: [0x0C60, 0x4C80, 0xC600, 0x2640], color: 'red'    };
+
+    function eachblock(type, x, y, dir, fn) {
+      var bit, result, row = 0, col = 0, blocks = type.blocks[dir];
+      for(bit = 0x8000 ; bit > 0 ; bit = bit >> 1) {
+        if (blocks & bit) {
+          fn(x + col, y + row);
+        }
+        if (++col === 4) {
+          col = 0;
+          ++row;
+        }
+      }
+    }
+
+    function occupied(type, x, y, dir) {
+      var result = false
+      eachblock(type, x, y, dir, function(x, y) {
+        if ((x < 0) || (x >= nx) || (y < 0) || (y >= ny) || getBlock(x,y))
+          result = true;
+      });
+      return result;
+    }
+
+    function unoccupied(type, x, y, dir) {
+      return !occupied(type, x, y, dir);
+    }
+
+    var pieces = [];
+    function randomPiece() {
+      if (pieces.length == 0)
+        pieces = [i,i,i,i,j,j,j,j,l,l,l,l,o,o,o,o,s,s,s,s,t,t,t,t,z,z,z,z];
+      var type = pieces.splice(random(0, pieces.length-1), 1)[0];
+      return { type: type, dir: DIR.UP, x: Math.round(random(0, nx - type.size)), y: 0 };
+    }
+
+
+    function run() {
+
+      showStats(); // initialize FPS counter
+      addEvents(); // attach keydown and resize events
+
+      var last = now = timestamp();
+      function frame() {
+        now = timestamp();
+        update(Math.min(1, (now - last) / 1000.0)); // using requestAnimationFrame have to be able to handle large delta's caused when it 'hibernates' in a background or non-visible tab
+        draw();
+        stats.update();
+        last = now;
+        requestAnimationFrame(frame, canvas);
+      }
+
+      resize(); // setup all our sizing information
+      reset();  // reset the per-game variables
+      frame();  // start the first frame
+
+    }
+
+    function showStats() {
+      stats.domElement.id = 'stats';
+      get('menu').appendChild(stats.domElement);
+    }
+
+    function addEvents() {
+      document.addEventListener('keydown', keydown, false);
+      window.addEventListener('resize', resize, false);
+    }
+
+    function resize(event) {
+      canvas.width   = canvas.clientWidth;  // set canvas logical size equal to its physical size
+      canvas.height  = canvas.clientHeight; // (ditto)
+      ucanvas.width  = ucanvas.clientWidth;
+      ucanvas.height = ucanvas.clientHeight;
+      dx = canvas.width  / nx; // pixel size of a single tetris block
+      dy = canvas.height / ny; // (ditto)
+      invalidate();
+      invalidateNext();
+    }
+
+    function keydown(ev) {
+      var handled = false;
+      if (playing) {
+        switch(ev.keyCode) {
+          case KEY.LEFT:   actions.push(DIR.LEFT);  handled = true; break;
+          case KEY.RIGHT:  actions.push(DIR.RIGHT); handled = true; break;
+          case KEY.UP:     actions.push(DIR.UP);    handled = true; break;
+          case KEY.DOWN:   actions.push(DIR.DOWN);  handled = true; break;
+          case KEY.ESC:    lose();                  handled = true; break;
+        }
+      }
+      else if (ev.keyCode == KEY.SPACE) {
+        play();
+        handled = true;
+      }
+      if (handled)
+        ev.preventDefault(); // prevent arrow keys from scrolling the page (supported in IE9+ and all other browsers)
+    }
+
+    function play() { hide('start'); reset();          playing = true;  }
+    function lose() { show('start'); setVisualScore(); playing = false; }
+
+    function setVisualScore(n)      { vscore = n || score; invalidateScore(); }
+    function setScore(n)            { score = n; setVisualScore(n);  }
+    function addScore(n)            { score = score + n;   }
+    function clearScore()           { setScore(0); }
+    function clearRows()            { setRows(0); }
+    function setRows(n)             { rows = n; step = Math.max(speed.min, speed.start - (speed.decrement*rows)); invalidateRows(); }
+    function addRows(n)             { setRows(rows + n); }
+    function getBlock(x,y)          { return (blocks && blocks[x] ? blocks[x][y] : null); }
+    function setBlock(x,y,type)     { blocks[x] = blocks[x] || []; blocks[x][y] = type; invalidate(); }
+    function clearBlocks()          { blocks = []; invalidate(); }
+    function clearActions()         { actions = []; }
+    function setCurrentPiece(piece) { current = piece || randomPiece(); invalidate();     }
+    function setNextPiece(piece)    { next    = piece || randomPiece(); invalidateNext(); }
+
+    function reset() {
+      dt = 0;
+      clearActions();
+      clearBlocks();
+      clearRows();
+      clearScore();
+      setCurrentPiece(next);
+      setNextPiece();
+    }
+
+    function update(idt) {
+      if (playing) {
+        if (vscore < score)
+          setVisualScore(vscore + 1);
+        handle(actions.shift());
+        dt = dt + idt;
+        if (dt > step) {
+          dt = dt - step;
+          drop();
+        }
+      }
+    }
+
+    function handle(action) {
+      switch(action) {
+        case DIR.LEFT:  move(DIR.LEFT);  break;
+        case DIR.RIGHT: move(DIR.RIGHT); break;
+        case DIR.UP:    rotate();        break;
+        case DIR.DOWN:  drop();          break;
+      }
+    }
+
+    function move(dir) {
+      var x = current.x, y = current.y;
+      switch(dir) {
+        case DIR.RIGHT: x = x + 1; break;
+        case DIR.LEFT:  x = x - 1; break;
+        case DIR.DOWN:  y = y + 1; break;
+      }
+      if (unoccupied(current.type, x, y, current.dir)) {
+        current.x = x;
+        current.y = y;
+        invalidate();
+        return true;
+      }
+      else {
+        return false;
+      }
+    }
+
+    function rotate() {
+      var newdir = (current.dir == DIR.MAX ? DIR.MIN : current.dir + 1);
+      if (unoccupied(current.type, current.x, current.y, newdir)) {
+        current.dir = newdir;
+        invalidate();
+      }
+    }
+
+    function drop() {
+      if (!move(DIR.DOWN)) {
+        addScore(10);
+        dropPiece();
+        removeLines();
+        setCurrentPiece(next);
+        setNextPiece(randomPiece());
+        clearActions();
+        if (occupied(current.type, current.x, current.y, current.dir)) {
+          lose();
+        }
+      }
+    }
+
+    function dropPiece() {
+      eachblock(current.type, current.x, current.y, current.dir, function(x, y) {
+        setBlock(x, y, current.type);
+      });
+    }
+
+    function removeLines() {
+      var x, y, complete, n = 0;
+      for(y = ny ; y > 0 ; --y) {
+        complete = true;
+        for(x = 0 ; x < nx ; ++x) {
+          if (!getBlock(x, y))
+            complete = false;
+        }
+        if (complete) {
+          removeLine(y);
+          y = y + 1; // recheck same line
+          n++;
+        }
+      }
+      if (n > 0) {
+        addRows(n);
+        addScore(100*Math.pow(2,n-1)); // 1: 100, 2: 200, 3: 400, 4: 800
+      }
+    }
+
+    function removeLine(n) {
+      var x, y;
+      for(y = n ; y >= 0 ; --y) {
+        for(x = 0 ; x < nx ; ++x)
+          setBlock(x, y, (y == 0) ? null : getBlock(x, y-1));
+      }
+    }
+
+    var invalid = {};
+
+    function invalidate()         { invalid.court  = true; }
+    function invalidateNext()     { invalid.next   = true; }
+    function invalidateScore()    { invalid.score  = true; }
+    function invalidateRows()     { invalid.rows   = true; }
+
+    function draw() {
+      ctx.save();
+      ctx.lineWidth = 1;
+      ctx.translate(0.5, 0.5); // for crisp 1px black lines
+      drawCourt();
+      drawNext();
+      drawScore();
+      drawRows();
+      ctx.restore();
+    }
+
+    function drawCourt() {
+      if (invalid.court) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        if (playing)
+          drawPiece(ctx, current.type, current.x, current.y, current.dir);
+        var x, y, block;
+        for(y = 0 ; y < ny ; y++) {
+          for (x = 0 ; x < nx ; x++) {
+            if (block = getBlock(x,y))
+              drawBlock(ctx, x, y, block.color);
+          }
+        }
+        ctx.strokeRect(0, 0, nx*dx - 1, ny*dy - 1); // court boundary
+        invalid.court = false;
+      }
+    }
+
+    function drawNext() {
+      if (invalid.next) {
+        var padding = (nu - next.type.size) / 2; // half-arsed attempt at centering next piece display
+        uctx.save();
+        uctx.translate(0.5, 0.5);
+        uctx.clearRect(0, 0, nu*dx, nu*dy);
+        drawPiece(uctx, next.type, padding, padding, next.dir);
+        uctx.strokeStyle = 'black';
+        uctx.strokeRect(0, 0, nu*dx - 1, nu*dy - 1);
+        uctx.restore();
+        invalid.next = false;
+      }
+    }
+
+    function drawScore() {
+      if (invalid.score) {
+        html('score', ("00000" + Math.floor(vscore)).slice(-5));
+        invalid.score = false;
+      }
+    }
+
+    function drawRows() {
+      if (invalid.rows) {
+        html('rows', rows);
+        invalid.rows = false;
+      }
+    }
+
+    function drawPiece(ctx, type, x, y, dir) {
+      eachblock(type, x, y, dir, function(x, y) {
+        drawBlock(ctx, x, y, type.color);
+      });
+    }
+
+    function drawBlock(ctx, x, y, color) {
+      ctx.fillStyle = color;
+      ctx.fillRect(x*dx, y*dy, dx, dy);
+      ctx.strokeRect(x*dx, y*dy, dx, dy)
+    }
+
+    run();
+  `;
+  return (
+    <script
+      type="text/javascript"
+      dangerouslySetInnerHTML={{ __html: script }}
+    />
+  );
 }
 
-// export default function Play() {
-//   return (
-//     <div>
-//       <h1>TETRIS</h1>
-//      <br></br>
-//        <p>
-//          <Link to='/'>Go to the home page</Link>
-//        </p>
-//     </div>
-//   )
-// }
-// 
-//       <br></br>
-//       <b>Game Control Requirements:</b>
-//       <ol>
-//         <li>Left arrow key to move falling block move left.</li>
-//         <li>Right arrow key to move falling block move right.</li>
-//         <li>Up arrow key to turn the falling block 90 degree clockwise.</li>
-//         <li>Down arrow key to speed up dropping speed of the falling block.</li>
-//         <li>“P” key to pause and resume the game.</li>
-//         <li>
-//           Esc key will bring a dialog box ask if the player want to finish the game. If the user
-//           select “Yes” then return to the start page, if “No” continue game.
-//         </li>
-//         <li>“M” key to turn on/off music and sound effects.</li>
-//       </ol>
-
-//       <br></br>
-//       <b>Game Scoring Requirements:</b>
-//       <p>
-//         We use a simple scoring for the game. A player or AI can get points only when they eliminate
-//         lines. More lines they eliminate through one block dropping, more points they will receive.
-//         The mapping between points and number of lines removed in one round is as:
-//       </p>
-//       <ul>
-//         <li>1 Lines = 100 points</li>
-//         <li>2 Lines = 300 points</li>
-//         <li>3 Lines = 600 points</li>
-//         <li>4 Lines = 1000 points</li>
-//       </ul>
-//       <br></br>
-
-//       <b>Game Extension Requirements:</b>
-//       <br></br>
-//       <img src={require('../images/GameExtensionRequirements.png')} />
-
-//       <br></br>
-//       <b>AI Game Requirements:</b>
-//       <p>
-//         The game has two different play mode: player mode and AI mode. In the player mode, the
-//         player uses the keyboard to control the movement of the dropping block as described in Game
-//         control section. In the AI mode, game AI will control the movement of the dropping block, to
-//         make it move left, right, turn and speedup dropping.
-//       </p>
-//       <p>A player can select different mode in the configuration page.</p>
-//       <p>
-//         When a player complete a game with score in top 10, the system will ask the player to input
-//         a name, and then the name and the score can be found in the top score page. In the gameplay
-//         page, apart from the field of the game, the dropping block, and the accumulated blocks at
-//         the bottom part of the field, the page will also need to display other information:
-//       </p>
-//       <ol>
-//         <li>Your group number (you will get the number when you enrol in one group).</li>
-//         <li>Current score of this play session.</li>
-//         <li>Number of lines have been eliminated in this play session.</li>
-//         <li>Current level.</li>
-//         <li>Extended game or normal game.</li>
-//         <li>Player mode or AI mode</li>
-//         <li>
-//           Next block (the shape of next dropping block when current block drops to the bottom)
-//         </li>
-//       </ol>
-
-//       <br></br>
-//       <b>Game Completion Requirements:</b>
-//       <p>
-//         There are two ways for a game to be completed. The first is that when the field is filled
-//         with blocks and a new dropping block has no space to appear, then the game is completed. The
-//         other way is that during a game, when a player presses ESC key and then click “Yes” in the
-//         dialogue box, then the game is also completed.
-//       </p>
-//       <p>
-//         Whenever a game is complete, if the score is in the top 10, the game will pop up an input
-//         dialogue box for the player to input a name. Then the name and score will appear in the top
-//         score page.
-//       </p>
-//       <p>
-//         The rule is applicable for AI mode as well. But no name input is required. AI game will take
-//         “AI” as the name.
-//       </p>
-//       <p>
-//         When a player completes a game with score in top 10, the system will ask the player to input
-//         a name, and then the name and the score can be found in the top score page.
-//       </p>
-
-//       <br></br>
-//       <p>
-//         <b>The game prototype should demonstrate following function:</b>
-//       </p>
-//       <ol>
-//         <li>To click the play button in the start up page pop up the game play page.</li>
-//         <li>The game page should display following items:</li>
-//         <ul className='letterlist'>
-//           <li>Game field and a dropping block</li>
-//           <li>Your group number.</li>
-//           <li>Current score of this play session.</li>
-//           <li>Number of lines have been eliminated in this play session.</li>
-//           <li>Current level.</li>
-//           <li>Extended game or normal game</li>
-//           <li>Player mode or AI mode</li>
-//           <li>
-//             Next block (the shape of next dropping block when current block drops to the bottom)
-//           </li>
-//         </ul>
-//         <li>The dropping block is dropping.</li>
-//         <li>
-//           A player can move the dropping block left, right and turn. When the dropping block reach
-//           the bottom of the field, it will stop. Other features will not required.
-//         </li>
-//         <li>
-//           Press Esc key will bring a dialog box ask if you want to finish the game. If click “Yes”
-//           then return to the start up page, if “No” continue game.
-//         </li>
-//       </ol>
-
-//       <br></br>
-//       <p>
-//         <Link to='/'>Go to the home page</Link>
-//       </p>
-//     </div>
-//   )
-// }
+export default function Play() {
+  return(
+    <html>
+      <head>
+        <title>Javascript Tetris</title>
+      </head>
+      <body>
+        <div id="tetris">
+          <div id="menu">
+            <p id="start"><a href="javascript:play();">Press Space to Play.</a></p>
+            <p><canvas id="upcoming"></canvas></p>
+            <p>score <span id="score">00000</span></p>
+            <p>rows <span id="rows">0</span></p>
+          </div>
+          <canvas id="canvas">
+            Sorry, this example cannot be run because your browser does not support the &lt;canvas&gt; element
+          </canvas>
+        </div>
+        <div>{GameLoop()}</div>
+        <Link to='/'>
+            <button type='button'>EXIT</button>
+        </Link>
+      </body>
+  </html>
+  )
+}
