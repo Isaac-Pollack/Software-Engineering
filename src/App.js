@@ -43,7 +43,7 @@ function Layout() {
           <Link to='/'>Home</Link>
         </li>
         <li>
-          <Link to='/play'>Play</Link>
+          <a href={process.env.PUBLIC_URL + "tetris.html"} rel="noreferrer" > Play</a>
         </li>
         <li>
           <Link to='/configure'>Configure</Link>
