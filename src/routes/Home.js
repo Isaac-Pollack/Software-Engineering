@@ -9,9 +9,7 @@ export default function Home() {
 
       <ol className='noList'>
         <li>
-          <button>
-            <a href={process.env.PUBLIC_URL + "tetris.html"} rel="noreferrer" > PLAY TETRIS</a>
-          </button>
+            <a href={process.env.PUBLIC_URL + "tetris.html"} rel="noreferrer" > <button>PLAY TETRIS</button></a>
         </li>
 
         <li>

@@ -9,7 +9,7 @@ import Hiscores from './routes/Hiscores'
 import { FaGithub } from 'react-icons/fa'
 
 export default function App() {
-  const settings = { gametype: 'Normal', player: 'test', startinglevel: '1', fieldwidth: '10', fieldheight: '24' };
+  const settings = { gametype: 'Extended', player: 'You', startinglevel: '1', fieldwidth: '10', fieldheight: '24' };
 
   if(localStorage.getItem(settings)) {
     console.log('Settings found, loading...')
