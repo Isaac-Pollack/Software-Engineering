@@ -88,8 +88,8 @@ li a:hover {
   text-align: center;
 }
 
-.noList li a:hover {
-  background-color: white;
+.fixPlay {
+  background-color: rgb(255, 102, 0);
 }
 
 .noList button {

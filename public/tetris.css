@@ -1,9 +1,27 @@
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',
     'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background: black;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+canvas {
+  border: 1px solid white;
+  padding-left: 0;
+  padding-right: 0;
+  margin-left: auto;
+  margin-right: auto;
+  display: block;
 }
 
 code {
@@ -14,6 +32,11 @@ img {
   border: 5px dashed rgb(98, 102, 105);
   margin-top: 15px;
   margin-bottom: 15px;
+}
+
+a:hover {
+  color: inherit;
+  background-color: inherit;
 }
 
 button {
@@ -89,7 +112,7 @@ li a:hover {
 }
 
 .noList li a:hover {
-  background-color: white;
+  background-color: black;
 }
 
 .noList button {
@@ -177,4 +200,15 @@ select {
 
 label {
   display: block;
+}
+
+.exitbutton {
+  padding-bottom: 12px;
+  padding-left: 20px;
+  padding-right: 20px;
+  padding-top: 12px;
+}
+
+li a:hover {
+  background-color: unset;
 }

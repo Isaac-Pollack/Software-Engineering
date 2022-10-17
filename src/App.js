@@ -9,6 +9,15 @@ import Hiscores from './routes/Hiscores'
 import { FaGithub } from 'react-icons/fa'
 
 export default function App() {
+  const settings = { gametype: 'Normal', player: 'test', startinglevel: '1', fieldwidth: '10', fieldheight: '24' };
+
+  if(localStorage.getItem(settings)) {
+    console.log('Settings found, loading...')
+  } else {
+    localStorage.setItem('Settings',  JSON.stringify(settings));
+    console.log('Settings not found, generating defaults...')
+  }
+
   return (
     <div>
       {/* TODO CSS Styling for Layout/Navbar */}
