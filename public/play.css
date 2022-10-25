@@ -1,0 +1,31 @@
+body {
+  background-color: #22272e;
+}
+
+.text {
+  color: #adbac7;
+  font-family: Inconsolata, Courier, monospace;
+  font-size: 20px;
+}
+
+#output {
+  float: left;
+  padding-left: 20%;
+}
+
+#score {
+  padding-left: 55%;
+}
+
+#instructions {
+  float: left;
+  position: absolute;
+  left: 1.5%;
+  bottom: 3%;
+  font-size: small;
+  line-height: 110%;
+}
+
+a:link {
+  color: inherit;
+}
