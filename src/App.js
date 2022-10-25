@@ -8,16 +8,19 @@ import Configure from './routes/Configure'
 import Hiscores from './routes/Hiscores'
 import { FaGithub } from 'react-icons/fa'
 
+// const settings = {gametype: "normal", gamemode: "you", gamelevel: "1", fieldwidth: "10", fieldheight: "20" };
+
+if(localStorage.getItem('Settings')) {
+  console.log('Settings found');
+  console.log(localStorage.getItem('Settings'));
+} else {
+  console.log('Settings not found');
+  localStorage.setItem('Settings',  JSON.stringify({gametype: "normal", gamemode: "you", gamelevel: "1", fieldwidth: "10", fieldheight: "20" }));
+  console.log(localStorage.getItem('Settings'));
+  // localStorage.setItem("Settings",  JSON.stringify(settings));
+}
+
 export default function App() {
-  const settings = { gametype: 'Extended', player: 'You', startinglevel: '1', fieldwidth: '10', fieldheight: '24' };
-
-  if(localStorage.getItem(settings)) {
-    console.log('Settings found, loading...')
-  } else {
-    localStorage.setItem('Settings',  JSON.stringify(settings));
-    console.log('Settings not found, generating defaults...')
-  }
-
   return (
     <div>
       {/* TODO CSS Styling for Layout/Navbar */}
@@ -52,7 +55,8 @@ function Layout() {
           <Link to='/'>Home</Link>
         </li>
         <li>
-          <a href={process.env.PUBLIC_URL + "tetris2.html"} rel="noreferrer" >Play</a>
+          <Link to='/play'>Play</Link>
+          {/* <a href={process.env.PUBLIC_URL + "play.html"} rel="noreferrer" >Play</a> */}
         </li>
         <li>
           <Link to='/configure'>Configure</Link>

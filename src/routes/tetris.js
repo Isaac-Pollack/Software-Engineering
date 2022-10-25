@@ -1,11 +1,11 @@
-// GAME VARIABLES - initialise the game state
-localStorage.setItem('Settings',  JSON.stringify({gametype: "normal", gamemode: "you", gamelevel: "1", fieldwidth: "10", fieldheight: "20" }));
+/**
+ * GAME VARIABLES - initialise the game state
+ */
 var settings = JSON.parse(localStorage.getItem('Settings'));
-//Debug
 console.log(settings);
 var gameType = settings.gametype;
 var gameMode = settings.gamemode;
-// console.log(gameMode);
+console.log(gameMode);
 var gameLevel = settings.gamelevel;
 var fieldWidth = settings.fieldwidth;
 var fieldHeight = settings.fieldheight;
@@ -17,8 +17,7 @@ var score = 0;
 
 var changeSpeed = false;
 var speeds = [1500,1000,500,100,10];
-// var speedIndex = (gameLevel - 1);
-var speedIndex = 0;
+var speedIndex = (gameLevel - 1);
 var speed = speeds[speedIndex];
 
 var currTetronimo = {x: 0, y: 0, shape: undefined};
@@ -646,8 +645,8 @@ function updateInfoPanel() {
   for (var l = 0; l < 4 - nextTetronimo.length; l++) {
     html += "<br />";
   }
-  var key = nextTetronimo.key;
-  colorT.style.setProperty('--tetronimo-color', colors[key]);
+  var keyT = nextTetronimo.key;
+  colorT.style.setProperty('--tetronimo-color', colors[keyT]);
   html = replaceAll(html, "1", "<span class=\"#box\"></span>");
   // for (var c = 0; c < colors.length; c++) {
   //   html = replaceAll(html, "," + (c + 1), ",<font color=\"" + colors[c] + "\">" + (c + 1) + "</font>");

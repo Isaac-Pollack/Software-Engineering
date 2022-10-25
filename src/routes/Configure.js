@@ -1,74 +1,99 @@
 import * as React from 'react'
 import { Link } from 'react-router-dom'
 
-function saveSettings() {
-  //Form ID's
-  var settings = { gametype: document.getElementById("gameType"), player: document.getElementById("AI"), startinglevel: document.getElementById("startingLevel"), fieldwidth: document.getElementById("fieldWidth"), fieldheight: document.getElementById("fieldHeight") }
+var settings;
 
-  console.log(settings.gametype)
-  //Save Settings
-  //localStorage.setItem('Settings',  JSON.stringify(settings));
-  console.log('Settings updated.')
+function saveConfiguration() {
+  var settings = {
+    gametype: document.getElementById("gameType").value,
+    gamemode: document.getElementById("gameMode").value,
+    gamelevel: document.getElementById("gameLevel").value,
+    fieldwidth: document.getElementById("fieldWidth").value,
+    fieldheight: document.getElementById("fieldHeight").value
+  };
+  localStorage.setItem("Settings",  JSON.stringify({gametype: settings.gametype, gamemode: settings.gamemode, gamelevel: settings.gamelevel, fieldwidth: settings.fieldwidth, fieldheight: settings.fieldheight}));
+  // localStorage.setItem("Settings",  JSON.stringify(
+  //   {
+  //     gametype: document.getElementById("gameType").value,
+  //     gamemode: document.getElementById("gameMode").value,
+  //     gamelevel: document.getElementById("gameLevel").value,
+  //     fieldwidth: document.getElementById("fieldWidth").value,
+  //     fieldheight: document.getElementById("fieldHeight").value
+  //   }
+  // ));
+  console.log('Settings saved');
+  console.log(JSON.parse(localStorage.getItem("Settings")));
+  // localStorage.setItem("Settings",  JSON.stringify(settings));
+  // if(localStorage.getItem("Settings")) {
+  //   console.log('Settings found, loading...');
+  //   console.log(localStorage.getItem("Settings"));
+  // } else {
+  //   console.log('Settings not found, generating defaults...');
+  //   localStorage.setItem("Settings",  JSON.stringify(settings));
+  //   console.log(localStorage.getItem("Settings"));
+  // }
 }
 
 export default function Configure() {
+  settings = JSON.parse(localStorage.getItem('Settings'));
   return (
     <div>
       <h1>Configure</h1>
 
       <form>
-        <label htmlFor='gameType'>Game Type: </label>
-        <select id='gameType' defaultValue={'normal'}>
-          <option value='normal'>Normal</option>
-          <option value='extended'>Extended</option>
+        <label htmlFor="type">Game Type: </label>
+        <select id="gameType" defaultValue={settings.gametype}>
+          <option value="normal">Normal</option>
+          <option value="extended">Extended</option>
         </select>
 
-        <label htmlFor='AI'>Who is playing: </label>
-        <select id='AI' defaultValue={'player'}>
-          <option value='player'>You</option>
-          <option value='ai'>AI</option>
+        <label htmlFor="mode">Game Mode: </label>
+        <select id="gameMode" type='string' defaultValue={settings.gamemode}>
+          <option value="you">You</option>
+          <option value="ai">AI</option>
         </select>
 
-        <label htmlFor='startingLevel'>Starting Level: </label>
+        <label htmlFor="level">Game Level: </label>
         <input
+          id="gameLevel"
           type='number'
-          id='startingLevel'
-          name='startingLevel'
-          min={1}
-          max={10}
           defaultValue={1}
+          // name="gameLevel"
+          min={1}
+          max={5}
+          step={1}
         ></input>
 
-        <label htmlFor='fieldWidth'>Field Width: </label>
+        <label htmlFor="width">Field Width: </label>
         <input
+          id="fieldWidth"
           type='number'
-          id='fieldWidth'
-          name='fieldWidth'
-          min={2}
-          max={24}
-          step={2}
           defaultValue={10}
-        ></input>
-        <label htmlFor='fieldHeight'>Field Height: </label>
-        <input
-          type='number'
-          id='fieldHeight'
-          name='fieldHeight'
+          // name='fieldWidth'
           min={2}
-          max={40}
+          max={20}
           step={2}
-          defaultValue={24}
+        ></input>
+        <label htmlFor="height">Field Height: </label>
+        <input
+          id="fieldHeight"
+          type='number'
+          defaultValue={20}
+          // name='fieldHeight'
+          min={4}
+          max={40}
+          step={4}
         ></input>
       </form>
 
       <ol className='noList'>
         <li>
-          <button type='button' onClick={saveSettings}>SAVE</button>
+          <button type='button' onClick={saveConfiguration}>SAVE</button>
         </li>
 
         <li>
           <Link to='/'>
-            <button type='button'>EXIT</button>
+            <button type='button' onClick={window.close()}>EXIT</button>
           </Link>
         </li>
       </ol>
