@@ -6,24 +6,40 @@ import Home from './routes/Home'
 import Play from './routes/Play'
 import Configure from './routes/Configure'
 import Hiscores from './routes/Hiscores'
-import { FaGithub } from 'react-icons/fa'
-
-// const settings = {gametype: "normal", gamemode: "you", gamelevel: "1", fieldwidth: "10", fieldheight: "20" };
+// import { FaGithub } from 'react-icons/fa'
 
 if(localStorage.getItem('Settings')) {
   console.log('Settings found');
   console.log(localStorage.getItem('Settings'));
 } else {
   console.log('Settings not found');
-  localStorage.setItem('Settings',  JSON.stringify({gametype: "normal", gamemode: "you", gamelevel: "1", fieldwidth: "10", fieldheight: "20" }));
+  localStorage.setItem('Settings',  JSON.stringify({gametype: false, gamemode: false, gamelevel: "1", fieldwidth: "10", fieldheight: "20" }));
   console.log(localStorage.getItem('Settings'));
-  // localStorage.setItem("Settings",  JSON.stringify(settings));
 }
 
 export default function App() {
   return (
     <div>
       {/* TODO CSS Styling for Layout/Navbar */}
+
+      {/* <nav class="navbar">
+    <a class="brand" href="#">Brand</a>
+    <input type="checkbox" id="nav" class="hidden">
+    <label for="nav" class="nav-toggle">
+        <span></span>
+        <span></span>
+        <span></span>
+     </label>
+    <div class="wrapper">
+      <ul class="menu">
+        <li class="menu-item"><a href="#">Home</a></li>
+        <li class="menu-item"><a href="#">About</a></li>
+        <li class="menu-item"><a href="#">Projects</a></li>
+        <li class="menu-item"><a href="#">comtacts</a></li>
+       
+      </ul>
+    </div>
+  </nav> */}
 
       {/* Routes nest inside one another. Nested route paths build upon
       parent route paths, and nested route elements render inside
@@ -46,17 +62,35 @@ export default function App() {
 }
 
 function Layout() {
+  console.log("process " + process.env.PUBLIC_URL);
   return (
-    <div className='Nav'>
-      {/* A "layout route" is a good place to put markup you want to
-      share across all the pages on your site, like navigation. */}
-      <ul>
+    <div>
+      <div className='navbar'>
+        <a className="home" href="/">Home</a>
+        <div>
+          <ul className="menu">
+            <li className="menu-item"><Link to='/play'>Play</Link></li>
+            <li className="menu-item"><Link to='/hiscores'>Hiscores</Link></li>
+            <li className="menu-item"><Link to='/configure'>Configure</Link></li>
+          </ul>
+        </div>
+      </div>
+      {/* An <Outlet> renders whatever child route is currently active,
+      so you can think about this <Outlet> as a placeholder for
+      the child routes we defined above. */}
+      <main className='Outlet'>
+        <Outlet />
+      </main>
+  </div>
+  )
+}
+
+      {/* <ul>
         <li>
           <Link to='/'>Home</Link>
         </li>
         <li>
           <Link to='/play'>Play</Link>
-          {/* <a href={process.env.PUBLIC_URL + "play.html"} rel="noreferrer" >Play</a> */}
         </li>
         <li>
           <Link to='/configure'>Configure</Link>
@@ -64,7 +98,10 @@ function Layout() {
         <li>
           <Link to='/hiscores'>Hiscores</Link>
         </li>
-        <li>
+      </ul> */}
+
+
+        {/* <li>
           <a
             href={'https://github.com/Isaac-Pollack/Software-Engineering'}
             target='_blank'
@@ -75,15 +112,13 @@ function Layout() {
         </li>
       </ul>
 
-      {/* An <Outlet> renders whatever child route is currently active,
+      An <Outlet> renders whatever child route is currently active,
       so you can think about this <Outlet> as a placeholder for
-      the child routes we defined above. */}
+      the child routes we defined above.
       <main className='Outlet'>
         <Outlet />
       </main>
-    </div>
-  )
-}
+    </div> */}
 
 //Catch case for everything else
 function NoMatch() {

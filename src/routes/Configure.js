@@ -12,26 +12,8 @@ function saveConfiguration() {
     fieldheight: document.getElementById("fieldHeight").value
   };
   localStorage.setItem("Settings",  JSON.stringify({gametype: settings.gametype, gamemode: settings.gamemode, gamelevel: settings.gamelevel, fieldwidth: settings.fieldwidth, fieldheight: settings.fieldheight}));
-  // localStorage.setItem("Settings",  JSON.stringify(
-  //   {
-  //     gametype: document.getElementById("gameType").value,
-  //     gamemode: document.getElementById("gameMode").value,
-  //     gamelevel: document.getElementById("gameLevel").value,
-  //     fieldwidth: document.getElementById("fieldWidth").value,
-  //     fieldheight: document.getElementById("fieldHeight").value
-  //   }
-  // ));
   console.log('Settings saved');
   console.log(JSON.parse(localStorage.getItem("Settings")));
-  // localStorage.setItem("Settings",  JSON.stringify(settings));
-  // if(localStorage.getItem("Settings")) {
-  //   console.log('Settings found, loading...');
-  //   console.log(localStorage.getItem("Settings"));
-  // } else {
-  //   console.log('Settings not found, generating defaults...');
-  //   localStorage.setItem("Settings",  JSON.stringify(settings));
-  //   console.log(localStorage.getItem("Settings"));
-  // }
 }
 
 export default function Configure() {
@@ -43,14 +25,14 @@ export default function Configure() {
       <form>
         <label htmlFor="type">Game Type: </label>
         <select id="gameType" defaultValue={settings.gametype}>
-          <option value="normal">Normal</option>
-          <option value="extended">Extended</option>
+          <option value={false}>Normal</option>
+          <option value={true}>Extended</option>
         </select>
 
         <label htmlFor="mode">Game Mode: </label>
         <select id="gameMode" type='string' defaultValue={settings.gamemode}>
-          <option value="you">You</option>
-          <option value="ai">AI</option>
+          <option value={false}>You</option>
+          <option value={true}>AI</option>
         </select>
 
         <label htmlFor="level">Game Level: </label>

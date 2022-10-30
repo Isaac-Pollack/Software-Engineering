@@ -1,11 +1,180 @@
-/* body {
+:root{
+  --background: #22272e;
+  --foreground: #adbac7;
+  --emphasis: #cdd9e5;
+  --overlay: #2d333b;
+  --border: #444c56;
+  --shadow: #1c2128;
+  --neutral: #636e7b;
+  --accent: #539bf5;
+  --success: #57ab5a;
+  --attention: #c69026;
+  --severe: #cc6b2c;
+  --danger: #e5534b;
+  --done: #986ee2;
+  --sponsors: #c96198;
+}
+
+* {
+  padding: 0;
   margin: 0;
-  font-family: BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
-} */
+  box-sizing: border-box;
+  list-style: none;
+  text-decoration: none;
+  -moz-osx-font-smoothing: grayscale;
+	-webkit-font-smoothing: antialiased;
+	text-rendering: optimizeLegibility;
+}
 
 body {
   margin: 0;
-  font-family: Courier, monospace;
+  font-family: "Roboto", Courier, monospace;
+  font-size: 1rem;
+  font-weight: normal;
+  line-height: 1.5;
+  color: var(--foreground);
+  background: var(--background);
+}
+
+.navbar {
+	display: flex;
+  flex-direction: row;
+  flex: 1;
+  flex-basis: auto;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 90rem;
+  width: 100%;
+  padding: 1rem 4rem;
+  margin: 0 auto;
+}
+
+.home {
+  font-family: inherit;
+  font-size: 1.75rem;
+  font-weight: 700;
+  line-height: inherit;
+  text-transform: uppercase;
+  color: var(--foreground);
+}
+
+/* .wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: -1;
+  opacity: 0;
+  background: var(--overlay);
+  transition: all 0.3s ease;
+} */
+
+.menu {
+  display: flex;
+  flex-direction: row;
+  flex: 1;
+  flex-basis: auto;
+  justify-content: center;
+  align-items: center;
+}
+
+.menu li {
+  list-style: none;
+  display: block;
+  color: var(--foreground);
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+}
+
+.menu-item:not(:first-child) {
+  margin-left: 2rem;
+}
+
+.menu-item a {
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: inherit;
+  color: var(--foreground);
+  text-transform: uppercase;
+}
+
+/* .button {
+  display: flex;
+  outline: 0;
+  cursor: pointer;
+  border: 2px solid var(--border);
+  border-radius: 3px;
+  color: var(--foreground);
+  background: var(--background);
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 28px;
+  padding: 12px 20px;
+  text-align: center;
+  transition-duration: 0.15s;
+  transition-property: all;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+} */
+
+.button {
+  position: relative;
+  display: block;
+  cursor: pointer;
+  z-index: 10;
+  padding: 0 60px;
+  color: var(--emphasis);
+  background: var(--success);
+  text-transform: uppercase;
+  transform: translateY(-6px);
+  transition: transform 0.2s;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+.button:hover {
+  color: var(--emphasis);
+  background: var(--overlay);
+}
+
+.Outlet {
+  margin: 15px;
+}
+
+.Outlet li {
+  float: none;
+}
+
+.Outlet h1 {
+  text-align: center;
+}
+
+/* a:link {
+  color: inherit;
+} */
+
+#output {
+  float: left;
+  padding-left: 20%;
+}
+
+#score {
+  padding-left: 55%;
+}
+
+#instructions {
+  float: left;
+  position: absolute;
+  left: 1.5%;
+  bottom: 3%;
+  font-size: small;
+  line-height: 110%;
+}
+
+#exit {
+  float: left;
+  padding-left: 20%;
 }
 
 code {
@@ -18,29 +187,7 @@ img {
   margin-bottom: 15px;
 }
 
-button {
-  display: inline-block;
-  outline: 0;
-  cursor: pointer;
-  border: 2px solid #000;
-  border-radius: 3px;
-  color: #fff;
-  background: #000;
-  font-size: 20px;
-  font-weight: 600;
-  line-height: 28px;
-  padding: 12px 20px;
-  text-align: center;
-  transition-duration: 0.15s;
-  transition-property: all;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-button:hover {
-  background: rgb(255, 102, 0);
-}
-
-ul {
+/* ul {
   list-style: none;
   margin: 0;
   padding: 0;
@@ -60,85 +207,8 @@ li a {
   text-decoration: none;
 }
 
-/* Change the link color to #111 (black) on hover */
 li a:hover {
   background-color: #111;
-}
-
-/* Route JS files content styling */
-.Outlet {
-  margin: 15px;
-}
-
-.Outlet li {
-  float: none;
-  background-color: white;
-}
-
-.letterlist li {
-  padding-left: 10px;
-  background-color: lightblue;
-}
-
-.Outlet h1 {
-  text-align: center;
-}
-
-.noList {
-  list-style: none;
-  padding-right: 16px;
-  text-align: center;
-}
-
-.fixPlay {
-  background-color: rgb(255, 102, 0);
-}
-
-.noList button {
-  display: inline;
-}
-
-.noList li a {
-  display: inline-block;
-  padding: 0;
-  margin: 14px 0px;
-}
-
-.card_box {
-  display: flex;
-  padding: 20px;
-}
-
-.card {
-  /* TODO finalise colour scheme */
-  display: inline-block;
-  box-shadow: rgba(255, 102, 0, 0.4) -5px 5px, rgba(255, 102, 0, 0.3) -10px 10px,
-    rgba(255, 102, 0, 0.2) -15px 15px, rgba(255, 102, 0, 0.1) -20px 20px,
-    rgba(255, 102, 0, 0.05) -25px 25px;
-  margin: 15px;
-  text-align: center;
-  background-color: rgb(250, 250, 250);
-  width: 50%;
-}
-
-.card img {
-  display: block;
-  border: 2px solid;
-  border-color: rgba(255, 102, 0, 0.4);
-  border-radius: 50%;
-  margin-left: auto;
-  margin-right: auto;
-  width: 50%;
-  height: auto;
-}
-
-.card button {
-  display: inline;
-  margin: 8px 8px;
-}
-
-.middle {
-  text-align: center;
 }
 
 table {
@@ -180,3 +250,48 @@ select {
 label {
   display: block;
 }
+
+.Outlet {
+  margin: 15px;
+}
+
+.Outlet li {
+  float: none;
+  background-color: white;
+}
+
+.Outlet h1 {
+  text-align: center;
+}
+
+.card_box {
+  display: flex;
+  padding: 20px;
+}
+
+.card {
+  display: inline-block;
+  box-shadow: rgba(255, 102, 0, 0.4) -5px 5px, rgba(255, 102, 0, 0.3) -10px 10px,
+    rgba(255, 102, 0, 0.2) -15px 15px, rgba(255, 102, 0, 0.1) -20px 20px,
+    rgba(255, 102, 0, 0.05) -25px 25px;
+  margin: 15px;
+  text-align: center;
+  background-color: rgb(250, 250, 250);
+  width: 50%;
+}
+
+.card img {
+  display: block;
+  border: 2px solid;
+  border-color: rgba(255, 102, 0, 0.4);
+  border-radius: 50%;
+  margin-left: auto;
+  margin-right: auto;
+  width: 50%;
+  height: auto;
+}
+
+.card button {
+  display: inline;
+  margin: 8px 8px;
+} */

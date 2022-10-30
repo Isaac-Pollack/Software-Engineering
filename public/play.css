@@ -1,31 +1,19 @@
-:root {
-  --tetronimo-color: white;
-}
-
 body {
   background-color: #22272e;
 }
-
 .text {
   color: #adbac7;
-  font-family: Courier, monospace;
+  font-family: Consolas, Courier, monospace;
   font-size: 20px;
 }
-
-#gamescreen {
+#output {
   float: left;
   padding-left: 20%;
 }
-
-#gamestatic {
+#score {
   padding-left: 55%;
 }
-
-#gameinfo {
-  padding-left: 55%;
-}
-
-#gamecommands {
+#instructions {
   float: left;
   position: absolute;
   left: 1.5%;
@@ -33,13 +21,14 @@ body {
   font-size: small;
   line-height: 110%;
 }
-
-#box {
-  width: 1ch;
-  height: auto;
-  color: var(--tetronimo-color);
+#exit {
+  float: center;
+  position: absolute;
+  left: 50%;
+  bottom: 10%;
+  font-size: small;
+  line-height: 110%;
 }
-
 a:link {
   color: inherit;
 }

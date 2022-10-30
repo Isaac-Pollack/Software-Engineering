@@ -1,29 +1,86 @@
 <!DOCTYPE html>
 <html>
-<head>
- <title>Tetris</title>
- <link href='https://fonts.googleapis.com/css2?family=Inconsolata' rel='stylesheet' type='text/html'>
- <link href="./play.css" rel="stylesheet" type="text/css">
-</head>
-<body>
-  <div id="gamescreen" class="text"></div>
-  <div id="gamestatic" class="text">
-    <br /><b>[2805ICT/3815ICT: GROUP 18]</b>
-  </div>
-  <div id="gameinfo" class="text"></div>
-  <div id="gamecommands" class="text">
-    <br /><b>[Key Commands]</b>
-    <br />Move Left: [Left Arrow]
-    <br />Move Right: [Right Arrow]
-    <br />Move Down: [Left Arrow]
-    <br />Rotate Shape: [Up Arrow]
-    <br />Drop Shape: [Space Bar]
-    <br />Speed Up: [Q]
-    <br />Slow Down: [A]
-    <br />Inspect Move Selection: [F]
-  </div>
-  <script src="./play.js"></script>
-  <script src="./ai.js"></script>
-</body>
-</html>
+  <head>
+    <title>Tetris</title>
+    <style>
+      body {
+        background-color: #22272e;
+      }
+      .text {
+        color: #adbac7;
+        font-family: Consolas, Courier, monospace;
+        font-size: 20px;
+      }
+      #output {
+        float: left;
+        padding-left: 20%;
+      }
+      #score {
+        padding-left: 55%;
+      }
+      #instructions {
+        float: left;
+        position: absolute;
+        left: 1.5%;
+        bottom: 3%;
+        font-size: small;
+        line-height: 110%;
+      }
+      #exit {
+        float: center;
+        position: absolute;
+        left: 50%;
+        bottom: 10%;
+        font-size: small;
+        line-height: 110%;
+      }
+      a:link {
+        color: inherit;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="output" class="text"></div>
+    <div id="score" class="text"></div>
+    <div id="instructions" class="text">
+      <br /><b>[Key Commands]</b>
+      <br />Move Left: [Left Arrow]
+      <br />Move Right: [Right Arrow]
+      <br />Move Down: [Left Arrow]
+      <br />Rotate Shape: [Up Arrow]
+      <br />Drop Shape: [Space Bar]
+      <br />Speed Up: [Q]
+      <br />Slow Down: [A]
+      <br />Inspect Move Selection: [F]
+    </div>
+    <script src="./ai.js"></script>
+    <script src="./play.js"></script>
+    <br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
+    <div id="exit">
+      <button id="button" type="button" onclick="window.location.href='http://localhost:3000'">EXIT</button>
+    </div>
 
+    <!-- Modal
+    <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+      aria-labelledby="staticBackdropLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="staticBackdropLabel">Modal title</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="togglepause1"></button>
+          </div>
+          <div class="modal-body modal-dialog modal-dialog-centered flex-column">
+            <div>[ Left Arrow ] [ <b>←</b> ] - <b>Move Left</b></div>
+            <div>[ Right Arrow ] [<b>→</b> ] - <b>Move Right</b></div>
+            <div>[ Up Arrow ] [ <b>↑</b> ] - <b>Rotate Clockwise</b></div>
+            <div>[ Down Arrow ] [ <b>↓</b> ] - <b>Rotate Anti-Clockwise</b></div>
+            <div>[ P ] - <b>Pause the game</b></div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-danger" data-bs-dismiss="modal" id="togglepause2">Close</button>
+          </div>
+        </div>
+      </div>
+    </div> -->
+  </body>
+</html>

@@ -1,45 +1,68 @@
 import * as React from 'react'
-import { Link } from 'react-router-dom'
-import './play.css'
+// import { Link } from 'react-router-dom'
 
 export default function Play() {
   return(
-    <div>
-      <link href="./play.css" rel="stylesheet" type="text/css"></link>
+    // <a href={process.env.PUBLIC_URL + "play.html"} rel="noreferrer"><button>PLAY</button></a>
+    // <Link to={process.env.PUBLIC_URL + "play.html"}></Link>
+    // <a href={process.env.PUBLIC_URL + "play.html"} rel="noreferrer" >Play</a>
 
-      <h1>TETRIS</h1>
+    <head>
+      <meta httpEquiv='refresh' content='0; url=play.html'/>
+      {/* <meta httpEquiv='refresh' content='0; url={process.env.PUBLIC_URL + "play.html"}'/> */}
+    </head>
 
-      <div id="gamescreen" className="text"></div>
+    // <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 
-      <div id="gamestatic" className="text">
-        <br /><b>[2805ICT/3815ICT: GROUP 18]</b>
-      </div>
+    // <body onload="window.location = 'http://example.com/'">
 
-      <div id="gameinfo" className="text"></div>
+    // <?php
+    //   header("Location: http://example.com", true, 302);
+    //   exit;
+    // ?>
+    // <script type="text/javascript">
+    //   window.location.href = "http://example.com"
+    // </script>
 
-      <div id="gamecommands" className="text">
-        <br /><b>[Key Commands]</b>
-        <br />Move Left: [Left Arrow]
-        <br />Move Right: [Right Arrow]
-        <br />Move Down: [Left Arrow]
-        <br />Rotate Shape: [Up Arrow]
-        <br />Drop Shape: [Space Bar]
-        <br />Speed Up: [Q]
-        <br />Slow Down: [A]
-        <br />Inspect Move Selection: [F]
-      </div>
+    // <script>
+    //   setTimeout(function(){location.href="http://example.com/alternate_url.html"} , 3000);
+    // </script>
 
-      <script src="./tetris.js"></script>
-      <script src="./ai.js"></script>
+    // <script type="text/javascript">
+    //   window.location.assign("http://www.example.com")
+    // </script>
 
-      <ol className='noList'>
-        <li>
-          <Link to='/'>
-            <button type='button'>EXIT</button>
-            {/* <button type='button' onClick={window.close()}>EXIT</button> */}
-          </Link>
-        </li>
-      </ol>
-    </div>
+    // <link rel="canonical" href="https://stackoverflow.com/"/>
+    // <noscript>
+    //   <meta http-equiv="refresh" content="0; URL=https://stackoverflow.com/">
+    // </noscript>
+    // <!--[if lt IE 9]><script type="text/javascript">var IE_fix=true;</script><![endif]-->
+    // <script type="text/javascript">
+    //   var url = "https://stackoverflow.com/";
+    //   if(typeof IE_fix != "undefined") // IE8 and lower fix to pass the http referer
+    //     {
+    //       document.write("redirecting..."); // Don't remove this line or appendChild() will fail because it is called before document.onload to make the redirect as fast as possible. Nobody will see this text, it is only a tech fix.
+    //       var referLink = document.createElement("a");
+    //       referLink.href = url;
+    //       document.body.appendChild(referLink);
+    //       referLink.click();
+    //     }
+    //     else { window.location.replace(url); } // All other browsers
+    // </script>
+
+    // <html>
+    //   <head>
+    //     <title>Example</title>
+    //     <script>
+    //       function init()
+    //       {
+    //           window.location.href = "www.wherever.com";
+    //       }
+    //     </script>
+    //   </head>
+
+    //   <body onload="init()">
+    //   </body>
+    // </html>
   )
 }
