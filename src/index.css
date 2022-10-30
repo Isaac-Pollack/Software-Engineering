@@ -21,14 +21,12 @@
   box-sizing: border-box;
   list-style: none;
   text-decoration: none;
-  -moz-osx-font-smoothing: grayscale;
-	-webkit-font-smoothing: antialiased;
 	text-rendering: optimizeLegibility;
 }
 
+
 body {
-  margin: 0;
-  font-family: "Roboto", Courier, monospace;
+  font-family: Consolas, Courier, monospace;
   font-size: 1rem;
   font-weight: normal;
   line-height: 1.5;
@@ -39,65 +37,211 @@ body {
 .navbar {
 	display: flex;
   flex-direction: row;
-  flex: 1;
-  flex-basis: auto;
   justify-content: space-between;
   align-items: center;
-  max-width: 90rem;
   width: 100%;
-  padding: 1rem 4rem;
+  padding: 0.1rem 7%;
   margin: 0 auto;
+  background-color: var(--overlay);
 }
 
 .home {
-  font-family: inherit;
-  font-size: 1.75rem;
+  font-size: 2rem;
   font-weight: 700;
-  line-height: inherit;
+  font-stretch: semi-expanded;
+  letter-spacing: .1em;
   text-transform: uppercase;
   color: var(--foreground);
 }
 
-/* .wrapper {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  z-index: -1;
-  opacity: 0;
-  background: var(--overlay);
-  transition: all 0.3s ease;
-} */
-
-.menu {
+.navlist {
   display: flex;
   flex-direction: row;
-  flex: 1;
-  flex-basis: auto;
   justify-content: center;
   align-items: center;
 }
 
-.menu li {
-  list-style: none;
-  display: block;
-  color: var(--foreground);
+.navlist li {
   text-align: center;
-  padding: 14px 16px;
-  text-decoration: none;
-}
-
-.menu-item:not(:first-child) {
-  margin-left: 2rem;
-}
-
-.menu-item a {
-  font-family: inherit;
-  font-size: 1rem;
+  padding: 20px 16px;
+  font-size: 1.5rem;
   font-weight: 700;
-  line-height: inherit;
-  color: var(--foreground);
+  letter-spacing: .1em;
   text-transform: uppercase;
+  color: var(--foreground);
+}
+
+.navplay a {
+  color: var(--success);
+}
+
+.navhiscores a {
+  color: var(--accent);
+}
+
+.navconfigure a {
+  color: var(--done);
+}
+
+.navitem:not(:first-child) {
+  margin-left: 1rem;
+}
+
+.menu {
+  position: absolute;
+  margin-top: -100px;
+  margin-left: -400px;
+  top: 50%;
+  left: 50%;
+	display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.menulist {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+button {
+  display: inline-block;
+  vertical-align: middle;
+  box-sizing: content-box;
+  width: 750px;
+  height: 80px;
+  margin-top: 15px;
+  text-align: center;
+  font-size: 2.5rem;
+  font-weight: 700;
+  font-stretch: semi-expanded;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+  text-shadow: 0 3px 3px var(--background);
+  box-shadow: 0px, 5px, 5px var(--shadow);
+  color: var(--emphasis);
+  background-color: var(--neutral);
+  transition: opacity .1s ease-out, transform 0.2s, text-shadow 0.3s, transform .12s ease-out, background .12s ease-out;
+  transform: translate3d(0,-2px,0);
+  filter: brightness(95%);
+  cursor: pointer;
+}
+
+button:hover {
+  transition: background .12s ease-out,color .12s ease-out;
+  filter: brightness(110%);
+}
+
+button:active {
+  box-shadow: none;
+  transition: transform .12s ease-out,background .12s ease-out,color .12s ease-out;
+  transform: translate3d(0,2px,0);
+  filter: brightness(110%);
+}
+
+.play-btn {
+  background-color: var(--success);
+}
+
+.hiscores-btn {
+  background-color: var(--accent);
+}
+
+.configure-btn {
+  background-color: var(--done);
+}
+
+.save-btn {
+  width: 300px;
+  height: 50px;
+  background-color: var(--done);
+}
+
+.exit-btn {
+  position: relative;
+  bottom: 15%;
+  width: 300px;
+  height: 50px;
+  background-color: var(--danger);
+}
+
+.authors {
+  position: absolute;
+  float: left;
+  left: 1.5%;
+  bottom: 5%;
+  font-size: small;
+}
+
+.hiscores-table {
+  text-align: center;
+  padding: 20px;
+  width: 50%;
+  margin-left: auto;
+  margin-right: auto;
+  font-size: medium;
+  color: var(--accent)
+}
+
+.hiscores-table th {
+  padding: 20px;
+}
+
+.hiscores-table td {
+  padding: 8px;
+}
+
+.hiscores-table tr:nth-child(even) {
+  background-color: var(--foreground);
+}
+
+.hiscores-table tr:nth-child(odd) {
+  background-color: var(--emphasis);
+}
+
+form {
+  margin: auto;
+  text-align: center;
+  background-color: var(--background);
+}
+
+input,
+select {
+  width: 50%;
+  margin: 20px;
+  padding: 16px 20px;
+  border: none;
+  border-radius: 4px;
+  background-color: var(--foreground);
+  font-size: medium;
+}
+
+label {
+  display: block;
+  font-size: medium;
+}
+
+li {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+
+.Outlet h1 {
+  text-align: center;
+}
+
+code {
+  font-family: Consolas, 'Courier New', monospace;
+}
+
+img {
+  border: 5px dashed rgb(98, 102, 105);
+  margin-top: 15px;
+  margin-bottom: 15px;
 }
 
 /* .button {
@@ -118,27 +262,7 @@ body {
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 } */
 
-.button {
-  position: relative;
-  display: block;
-  cursor: pointer;
-  z-index: 10;
-  padding: 0 60px;
-  color: var(--emphasis);
-  background: var(--success);
-  text-transform: uppercase;
-  transform: translateY(-6px);
-  transition: transform 0.2s;
-  border-radius: 4px;
-  box-sizing: border-box;
-}
-
-.button:hover {
-  color: var(--emphasis);
-  background: var(--overlay);
-}
-
-.Outlet {
+/* .Outlet {
   margin: 15px;
 }
 
@@ -148,44 +272,7 @@ body {
 
 .Outlet h1 {
   text-align: center;
-}
-
-/* a:link {
-  color: inherit;
 } */
-
-#output {
-  float: left;
-  padding-left: 20%;
-}
-
-#score {
-  padding-left: 55%;
-}
-
-#instructions {
-  float: left;
-  position: absolute;
-  left: 1.5%;
-  bottom: 3%;
-  font-size: small;
-  line-height: 110%;
-}
-
-#exit {
-  float: left;
-  padding-left: 20%;
-}
-
-code {
-  font-family: Consolas, 'Courier New', monospace;
-}
-
-img {
-  border: 5px dashed rgb(98, 102, 105);
-  margin-top: 15px;
-  margin-bottom: 15px;
-}
 
 /* ul {
   list-style: none;
@@ -209,46 +296,6 @@ li a {
 
 li a:hover {
   background-color: #111;
-}
-
-table {
-  text-align: center;
-  padding: 20px;
-  width: 50%;
-  border: solid #000;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-th {
-  padding: 20px;
-}
-
-td {
-  padding: 8px;
-}
-
-tr:nth-child(even) {
-  background-color: #ccc;
-}
-
-form {
-  margin: 50px;
-  text-align: center;
-}
-
-input,
-select {
-  width: 50%;
-  margin: 20px;
-  padding: 16px 20px;
-  border: none;
-  border-radius: 4px;
-  background-color: #f1f1f1;
-}
-
-label {
-  display: block;
 }
 
 .Outlet {

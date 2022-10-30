@@ -1,14 +1,19 @@
-// GAME SETTINGS
-
+/**
+ * Game settings read from local storage on the browser
+ */
 var settings = JSON.parse(localStorage.getItem('Settings'));
-console.log(settings);
+var hiscores = JSON.parse(localStorage.getItem('Score'));
+console.log('Settings: ' + settings);
+console.log('Scores: ' + hiscores);
 var gameType = settings.gametype;
 var gameMode = settings.gamemode;
 var gameLevel = settings.gamelevel;
 var fieldWidth = settings.fieldwidth;
 var fieldHeight = settings.fieldheight;
 
-// GAME BOARD
+/**
+ * Creates the initial 20X10 gameboard.
+ */
 var grid = [
     [0,0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0],
@@ -32,7 +37,9 @@ var grid = [
     [0,0,0,0,0,0,0,0,0,0],
 ];
 
-// TETRONIMOS
+/**
+ * Tetronimo shape and color definitions for different gametypes
+ */
 var shapes;
 var colors;
 var shapes1 = {
@@ -69,7 +76,14 @@ if (gameType) {
     colors = colors1;
 }
 
-//BLOCK SHAPES
+/**
+ * Game state variables
+ */
+// game and paused document elements for controling pause game behaviour
+// var gameElem = document.getElementById("game");
+// var pauseElem = document.getElementById("paused");
+// var overElem = document.getElementById("over");
+// var hiscoreElem = document.getElementById("hiscore");
 //coordinates and shape parameter of current block we can update
 var currentShape = {x: 0, y: 0, shape: undefined};
 //store shape of upcoming block
@@ -90,14 +104,21 @@ var changeSpeed = false;
 var saveState;
 //stores current game state
 var roundState;
+// list of level titles
+levels = ['BEGINNER', 'NORMAL', 'HARD', 'PRO', 'INSANE']
 //list of available game speeds
 var speeds = [1000,500,250,100,1,];
 //inded in game speed array
-var speedIndex = 0;
+var speedIndex = gameLevel;
 // game speed
 var speed = speeds[speedIndex];
 //turn ai on or off
 var ai = gameMode;
+// game starts paused unless ai playing
+var pause = false;
+// if (ai) {
+//     pause = false;
+// }
 //drawing game vs updating algorithms
 var draw = true;
 //how many so far?
@@ -110,7 +131,9 @@ var moveAlgorithm = {};
 var inspectMoveSelection = false;
 
 
-//GENETIC ALGORITHM VALUES
+/**
+ * Genetic algorithm values, used to mutate the AI behaviour
+ */
 //stores number of genomes, init at 50 
 var populationSize = 50;
 //stores genomes
@@ -132,7 +155,9 @@ var mutationRate = 0.05;
 var mutationStep = 0.2;
 
 
-//main function, called on load
+/**
+ * Main game loop, manages the game state and timing of drawing to the screen
+ */
 function initialize() {
     //init pop size
     archive.populationSize = populationSize;
@@ -145,9 +170,13 @@ function initialize() {
     roundState = getState();
     //create an initial population of genomes
     // createInitialPopulation();
-    loadArchive("ai2.js")
+    loadArchive("ai.js")
     //the game loop
     var loop = function(){
+        // while (pause === true) {
+        //     console.log('yup');
+        //     setTimeout(loop, 10);
+        // }
         //boolean for changing game speed
         if (changeSpeed) {
             //restart the clock
@@ -180,15 +209,25 @@ function initialize() {
     };
     //timer interval
     var interval = setInterval(loop, speed);
+    // pause game
+    // while (pause) {
+    //     await pauseGame(100);
+    // }
 }
 document.onLoad = initialize();
 
 
-//key options
-window.onkeydown = function (event) {
+/**
+ * Enables keyboard input based on Player or AI game mode.
+ */
+window.onkeydown = async function (event) {
 
     var characterPressed = String.fromCharCode(event.keyCode);
-    if (gameMode) {
+    if (event.keyCode == 27) {
+        pause = true;
+        pauseMenu();
+    }
+    if (ai) {
         if (characterPressed.toUpperCase() == "W") {
             //speed up
             speedIndex++;
@@ -207,7 +246,7 @@ window.onkeydown = function (event) {
             speed = speeds[speedIndex];
             changeSpeed = true;
         } else if (characterPressed.toUpperCase() == "F") {
-            //?
+            // show AI Move selection parameters
             inspectMoveSelection = !inspectMoveSelection;
         } else {
             return true;
@@ -221,13 +260,14 @@ window.onkeydown = function (event) {
             moveLeft();
         } else if (event.keyCode == 39) {
             moveRight();
+        } else if (event.keyCode == 13) {
+            pause = false;
         } else if (characterPressed.toUpperCase() == "W") {
             //speed up
             speedIndex++;
             if (speedIndex >= speeds.length) {
                 speedIndex = 0;
             }
-            //adjust speed index
             speed = speeds[speedIndex];
             changeSpeed = true;
         } else if (characterPressed.toUpperCase() == "S") {
@@ -238,9 +278,6 @@ window.onkeydown = function (event) {
             }
             speed = speeds[speedIndex];
             changeSpeed = true;
-        } else if (characterPressed.toUpperCase() == "F") {
-            //?
-            inspectMoveSelection = !inspectMoveSelection;
         } else {
             return true;
         }
@@ -249,6 +286,88 @@ window.onkeydown = function (event) {
     output();
     return false;
 };
+
+function pauseGame(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+// async function wait() {
+    
+// }
+
+function pauseMenu() {
+    document.getElementById("game").hidden = true;
+    document.getElementById("pause").hidden = false;
+    document.getElementById("yes").addEventListener(
+        "click",
+        () => {
+            pause = false;
+            document.getElementById("pause").hidden = true;
+            document.getElementById("game").hidden = false;
+        },
+        false
+    );
+    // document.getElementById("no").addEventListener(
+    //     "click",
+    //     () => {
+    //         pause = false;
+    //         document.getElementById("pause").hidden = true;
+    //         document.getElementById("game").hidden = false;
+    //     },
+    //     false
+    // );
+}
+
+function gameOver() {
+    document.getElementById("game").hidden = true;
+    document.getElementById("over").hidden = false;
+    checkHiScore();
+    document.getElementById("yes").addEventListener(
+        "click",
+        () => {
+            reset();
+            paused = false;
+            document.getElementById("hiscore").hidden = true;
+            document.getElementById("over").hidden = true;
+            document.getElementById("game").hidden = false;
+        },
+        false
+    );
+    // document.getElementById("no").addEventListener(
+    //     "click",
+    //     () => {
+    //         reset();
+    //         document.getElementById("hiscore").hidden = true;
+    //         document.getElementById("over").hidden = true;
+    //         document.getElementById("game").hidden = false;
+    //     },
+    //     false
+    // );
+}
+
+function checkHiScore() {
+    var curr = -1;
+    var player = 'NA';
+    var records = hiscores.sort((a, b) => a.hiscore-b.hiscore);
+    for (var i = 0; i < records.length; i++) {
+        if (score > records[i].hiscore) {
+            curr = i;
+        }
+    }
+    if (curr > -1) {
+        document.getElementById("hiscore").hidden = false;
+        document.getElementById("playersubmit").addEventListener(
+            "click",
+            () => {
+                player = document.getElementById("playername").value;
+            },
+            false
+        );
+        records.insert(curr, {name: player, hiscore: score});
+        records.shift();
+        localStorage.setItem('Scores',  JSON.stringify(records));
+    }
+}
 
 /**
  * Creates the initial population of genomes, each with random genes.
@@ -631,10 +750,13 @@ function moveDown() {
         if (collides(grid, currentShape)) {
             //reset
             result.lose = true;
-            if (ai) {
-            } else {
-                reset();
-            }
+            pause = true;
+            gameOver();
+            // if (ai) {
+            //     // pop up gameover screen with replay option
+            // } else {
+            //     gameOver();
+            // }
         }
         result.moved = false;
     }
@@ -843,6 +965,7 @@ function reset() {
         [0,0,0,0,0,0,0,0,0,0],
     ];
     moves = 0;
+    pause = true;
     generateBag();
     nextShape();
 }
@@ -898,7 +1021,7 @@ function output() {
     if (draw) {
         var output = document.getElementById("output");
         var space = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
-        var html = "<h1>Tetris</h1><h4>Group 18</h4><br /><font color=#e5534b>var</font> <font color=#539bf5>grid</font> = [";
+        var html = "<h1>TETRIS</h1><h4>GROUP 18</h4><br /><font color=#e5534b>var</font> <font color=#539bf5>grid</font> = [";
         for (var i = 0; i < grid.length; i++) {
             if (i === 0) {
                 html += "[" + grid[i] + "]";
@@ -911,7 +1034,6 @@ function output() {
             html = replaceAll(html, "," + (c + 1), ",<font color=\"" + colors[c] + "\">" + (c + 1) + "</font>");
             html = replaceAll(html, (c + 1) + ",", "<font color=\"" + colors[c] + "\">" + (c + 1) + "</font>,");
         }
-        // html = replaceAll(html, "0", "<font color=#c6e6ff>0</font>");
         output.innerHTML = html;
     }
 }
@@ -936,11 +1058,10 @@ function updateScore() {
             html = replaceAll(html, (c + 1) + ",", "<font color=\"" + colors[c] + "\">" + (c + 1) + "</font>,");
         }
         html += "<br />Lines: " + lines;
-        html += "<br />Level: " + (speedIndex + 1);
-        html += "<br />Type: " + (gameType ? "Normal" : "Extended");
-        html += "<br />Mode: " + (gameMode ? "AI" : "You");
+        html += "<br />Level: " + levels[speedIndex];
+        html += "<br />Type: " + (gameType ? "Extended" : "Normal");
+        html += "<br />Mode: " + (gameMode ? "AI" : "Player");
         if (ai) {
-            // html += "<br /><pre style=\"font-size:12px\">" + JSON.stringify(genomes[currentGenome], null, 2) + "</pre>";
             if (inspectMoveSelection) {
                 html += "<br /><pre style=\"font-size:12px\">" + JSON.stringify(moveAlgorithm, null, 2) + "</pre>";
             }
@@ -1118,10 +1239,10 @@ function getHeight() {
 }
 
 /**
- * Loads the archive given.
- * @param  {String} archiveString The stringified archive.
+ * Loads the fullevolvedarchive.
+ *
  */
-function loadArchive(archiveString) {
+function loadArchive() {
     archive = fullyEvolvedArchive;
     genomes = clone(archive.genomes);
     populationSize = archive.populationSize;
@@ -1131,6 +1252,17 @@ function loadArchive(archiveString) {
     roundState = getState();
     console.log("Archive loaded!");
 }
+
+/**
+ * Array insert helper method.
+ * @param  {Number} index the index at which to insert values.
+ * param  {Any} values the values to insert in the array at position index.
+ */
+Array.prototype.insert = function(index) {
+    this.splice.apply(this, [index, 0].concat(
+        Array.prototype.slice.call(arguments, 1)));
+    return this;
+};
 
 /**
  * Clones an object.

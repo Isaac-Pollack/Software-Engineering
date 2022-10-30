@@ -3,10 +3,6 @@ import * as React from 'react'
 
 export default function Play() {
   return(
-    // <a href={process.env.PUBLIC_URL + "play.html"} rel="noreferrer"><button>PLAY</button></a>
-    // <Link to={process.env.PUBLIC_URL + "play.html"}></Link>
-    // <a href={process.env.PUBLIC_URL + "play.html"} rel="noreferrer" >Play</a>
-
     <head>
       <meta httpEquiv='refresh' content='0; url=play.html'/>
       {/* <meta httpEquiv='refresh' content='0; url={process.env.PUBLIC_URL + "play.html"}'/> */}
