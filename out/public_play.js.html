@@ -1,8 +1,38 @@
-/**
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: public/play.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: public/play.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
  * Game settings read from local storage on the browser
  */
 var settings = JSON.parse(localStorage.getItem('Settings'));
-var hiscores = JSON.parse(localStorage.getItem('Scores'));
+var hiscores = JSON.parse(localStorage.getItem('Score'));
+console.log('Settings: ' + settings);
+console.log('Scores: ' + hiscores);
 var gameType = settings.gametype;
 var gameMode = settings.gamemode;
 var gameLevel = settings.gamelevel;
@@ -66,28 +96,14 @@ var shapes2 = {
               //blue    //green   //yellow  //orange  //red     //purple  //pink    //dblue   //dgreen
 var colors2 = ["539bf5", "57ab5a", "c69026", "cc6b2c", "e5534b", "986ee2", "c96198", "1b4b91", "245829"];
 
-// determine game mode
-if (gameType == 'normal') {
-    shapes = shapes1;
-    colors = colors1;
-} else {
+if (gameType) {
     shapes = shapes2;
     colors = colors2;
+} else {
+    shapes = shapes1;
+    colors = colors1;
 }
 
-/**
- * AI or Player game mode selection
- */
-var ai;
-var legend;
-if (gameMode == 'ai') {
-    //turn ai on or off
-    ai = true;
-    document.getElementById("ai-legend").hidden = false;
-} else {
-    ai = false;
-    document.getElementById("player-legend").hidden = false;
-}
 /**
  * Game state variables
  */
@@ -108,7 +124,6 @@ var bagIndex = 0;
 var rndSeed = 1;
 //Game score
 var score = 0;
-var aiScore = 0;
 // Lines eliminated
 var lines = 0;
 // boolean for changing game speed
@@ -120,15 +135,24 @@ var roundState;
 // list of level titles
 levels = ['BEGINNER', 'NORMAL', 'HARD', 'PRO', 'INSANE']
 //list of available game speeds
-var speeds = [1000,500,250,100,10];
+var speeds = [1000,500,250,100,1,];
 //inded in game speed array
 var speedIndex = gameLevel;
 // game speed
 var speed = speeds[speedIndex];
-// game starts unpaused
+//turn ai on or off
+var ai = gameMode;
+// game starts paused unless ai playing
 var pause = false;
+// if (ai) {
+//     pause = false;
+// }
 //drawing game vs updating algorithms
 var draw = true;
+//how many so far?
+var movesTaken = 0;
+//max number of moves allowed in a generation
+var moveLimit = 500;
 //consists of move the 7 move parameters
 var moveAlgorithm = {};
 //set to highest rate move 
@@ -140,8 +164,6 @@ var inspectMoveSelection = false;
  */
 //stores number of genomes, init at 50 
 var populationSize = 50;
-var movesTaken = 0;
-var moveLimit = 10;
 //stores genomes
 var genomes = [];
 //index of current genome in genomes array
@@ -180,43 +202,46 @@ function initialize() {
     
     // main game loop
     var loop = function(){
-        if (pause) {
-            //do nothing
-        } else {
-            //boolean for changing game speed
-            if (changeSpeed) {
-                //restart the clock
-                //stop time
-                clearInterval(interval);
-                //set time, like a digital watch
-                interval = setInterval(loop, speed);
-                //and don't change it
-                changeInterval = false;
-            }
-            if (speed === 0) {
-                //no need to draw on screen elements
-                draw = false;
-                //updates the game (update fitness, make a move, evaluate next move)
-                update();
-                update();
-                update();
-            } else {
-                //draw the elements
-                draw = true;
-            }
-            //update regardless
+        // while (pause === true) {
+        //     console.log('yup');
+        //     setTimeout(loop, 10);
+        // }
+        //boolean for changing game speed
+        if (changeSpeed) {
+            //restart the clock
+            //stop time
+            clearInterval(interval);
+            //set time, like a digital watch
+            interval = setInterval(loop, speed);
+            //and don't change it
+            changeInterval = false;
+        }
+        if (speed === 0) {
+            //no need to draw on screen elements
+            draw = false;
+            //updates the game (update fitness, make a move, evaluate next move)
             update();
-            if (speed === 0) {
-                //now draw elements
-                draw = true;
-                //now update the score
-                updateScore();
-            }
+            update();
+            update();
+        } else {
+            //draw the elements
+            draw = true;
+        }
+        //update regardless
+        update();
+        if (speed === 0) {
+            //now draw elements
+            draw = true;
+            //now update the score
+            updateScore();
         }
     };
     //timer interval
     var interval = setInterval(loop, speed);
-
+    // pause game
+    // while (pause) {
+    //     await pauseGame(100);
+    // }
 }
 document.onLoad = initialize();
 
@@ -224,13 +249,12 @@ document.onLoad = initialize();
 /**
  * Enables keyboard input based on Player or AI game mode.
  */
-window.onkeydown = function (event) {
+window.onkeydown = async function (event) {
 
     var characterPressed = String.fromCharCode(event.keyCode);
     if (event.keyCode == 27) {
+        pause = true;
         pauseMenu();
-    } else if (characterPressed.toUpperCase() == "P") {
-        pause = !pause;
     }
     if (ai) {
         if (characterPressed.toUpperCase() == "W") {
@@ -245,7 +269,7 @@ window.onkeydown = function (event) {
         } else if (characterPressed.toUpperCase() == "S") {
             //slow down
             speedIndex--;
-            if (speedIndex < 0) {
+            if (speedIndex &lt; 0) {
                 speedIndex = speeds.length - 1;
             }
             speed = speeds[speedIndex];
@@ -278,7 +302,7 @@ window.onkeydown = function (event) {
         } else if (characterPressed.toUpperCase() == "S") {
             //slow down
             speedIndex--;
-            if (speedIndex < 0) {
+            if (speedIndex &lt; 0) {
                 speedIndex = speeds.length - 1;
             }
             speed = speeds[speedIndex];
@@ -296,99 +320,81 @@ function pauseGame(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-async function wait() {
-    await pauseGame(100);
-}
+// async function wait() {
+    
+// }
 
 function pauseMenu() {
-    pause = true;
-    if (ai) {
-        document.getElementById("ai-legend").hidden = true;
-    } else {
-        document.getElementById("player-legend").hidden = true;
-    }
     document.getElementById("game").hidden = true;
     document.getElementById("pause").hidden = false;
-    document.getElementById("pause-yes").addEventListener(
+    document.getElementById("yes").addEventListener(
         "click",
         () => {
+            pause = false;
             document.getElementById("pause").hidden = true;
             document.getElementById("game").hidden = false;
-            if (ai) {
-                document.getElementById("ai-legend").hidden = false;
-            } else {
-                document.getElementById("player-legend").hidden = false;
-            }
-            pause = false;
         },
         false
     );
+    // document.getElementById("no").addEventListener(
+    //     "click",
+    //     () => {
+    //         pause = false;
+    //         document.getElementById("pause").hidden = true;
+    //         document.getElementById("game").hidden = false;
+    //     },
+    //     false
+    // );
 }
 
 function gameOver() {
-    pause = true;
-    if (ai) {
-        document.getElementById("ai-legend").hidden = true;
-    } else {
-        document.getElementById("player-legend").hidden = true;
-    }
     document.getElementById("game").hidden = true;
     document.getElementById("over").hidden = false;
     checkHiScore();
-    document.getElementById("over-yes").addEventListener(
+    document.getElementById("yes").addEventListener(
         "click",
         () => {
             reset();
+            paused = false;
             document.getElementById("hiscore").hidden = true;
             document.getElementById("over").hidden = true;
             document.getElementById("game").hidden = false;
-            if (ai) {
-                document.getElementById("ai-legend").hidden = false;
-            } else {
-                document.getElementById("player-legend").hidden = false;
-            }
-            pause = false;
         },
         false
     );
+    // document.getElementById("no").addEventListener(
+    //     "click",
+    //     () => {
+    //         reset();
+    //         document.getElementById("hiscore").hidden = true;
+    //         document.getElementById("over").hidden = true;
+    //         document.getElementById("game").hidden = false;
+    //     },
+    //     false
+    // );
 }
 
 function checkHiScore() {
     var curr = -1;
     var player = 'NA';
-    if (ai) {
-        score = aiScore;
-    }
     var records = hiscores.sort((a, b) => a.hiscore-b.hiscore);
-    for (var i = 0; i < records.length; i++) {
+    for (var i = 0; i &lt; records.length; i++) {
         if (score > records[i].hiscore) {
             curr = i;
         }
     }
-    console.log("curr: ", curr);
     if (curr > -1) {
-        if (ai) {
-            player = 'AI';
-            records.insert(curr, {name: player, hiscore: score});
-            records.shift();
-            console.log("records: ", records);
-            localStorage.setItem('Scores',  JSON.stringify(records));
-        } else {
-            document.getElementById("hiscore").hidden = false;
-            document.getElementById("playersubmit").addEventListener(
-                "click",
-                () => {
-                    player = document.getElementById("playername").value;
-                    records.insert(curr, {name: player, hiscore: score});
-                    records.shift();
-                    localStorage.setItem('Scores',  JSON.stringify(records));
-                    document.getElementById("hiscore").hidden = true;
-                },
-                false
-            );
-        }
-        hiscores = JSON.parse(localStorage.getItem('Scores'));
-        console.log("hiscores: ", hiscores);
+        document.getElementById("hiscore").hidden = false;
+        document.getElementById("playersubmit").addEventListener(
+            "click",
+            () => {
+                player = document.getElementById("playername").value;
+            },
+            false
+        );
+        records.insert(curr, {name: player, hiscore: score});
+        records.shift();
+        localStorage.setItem('Scores',  JSON.stringify(records));
     }
 }
 
@@ -399,7 +405,7 @@ function createInitialPopulation() {
     //inits the array
     genomes = [];
     //for a given population size
-    for (var i = 0; i < populationSize; i++) {
+    for (var i = 0; i &lt; populationSize; i++) {
         //randomly initialize the 7 values that make up a genome
         //these are all weight values that are updated through evolution
         var genome = {
@@ -454,6 +460,8 @@ function evolve() {
     currentGenome = 0;
     //increment generation
     generation++;
+    //resets the game
+    reset();
     //gets the current game state
     roundState = getState();
     //sorts genomes in decreasing order of fitness values
@@ -470,7 +478,7 @@ function evolve() {
     }
     //sum of the fitness for each genome
     var totalFitness = 0;
-    for (var i = 0; i < genomes.length; i++) {
+    for (var i = 0; i &lt; genomes.length; i++) {
         totalFitness += genomes[i].fitness;
     }
 
@@ -483,7 +491,7 @@ function evolve() {
     //add the fittest genome to array
     children.push(clone(genomes[0]));
     //add population sized amount of children
-    while (children.length < populationSize) {
+    while (children.length &lt; populationSize) {
         //crossover between two random genomes to make a child
         children.push(makeChild(getRandomGenome(), getRandomGenome()));
     }
@@ -524,30 +532,29 @@ function makeChild(mum, dad) {
     //mutation time!
 
     //we mutate each parameter using our mutationstep
-    if (Math.random() < mutationRate) {
+    if (Math.random() &lt; mutationRate) {
         child.rowsCleared = child.rowsCleared + Math.random() * mutationStep * 2 - mutationStep;
     }
-    if (Math.random() < mutationRate) {
+    if (Math.random() &lt; mutationRate) {
         child.weightedHeight = child.weightedHeight + Math.random() * mutationStep * 2 - mutationStep;
     }
-    if (Math.random() < mutationRate) {
+    if (Math.random() &lt; mutationRate) {
         child.cumulativeHeight = child.cumulativeHeight + Math.random() * mutationStep * 2 - mutationStep;
     }
-    if (Math.random() < mutationRate) {
+    if (Math.random() &lt; mutationRate) {
         child.relativeHeight = child.relativeHeight + Math.random() * mutationStep * 2 - mutationStep;
     }
-    if (Math.random() < mutationRate) {
+    if (Math.random() &lt; mutationRate) {
         child.holes = child.holes + Math.random() * mutationStep * 2 - mutationStep;
     }
-    if (Math.random() < mutationRate) {
+    if (Math.random() &lt; mutationRate) {
         child.roughness = child.roughness + Math.random() * mutationStep * 2 - mutationStep;
     }
     return child;
 }
 
 /**
- * Returns an array of all the possible moves that could occur in the current state, 
- * rated by the parameters of the current genome.
+ * Returns an array of all the possible moves that could occur in the current state, rated by the parameters of the current genome.
  * @return {Array} An array of all the possible moves that could occur.
  */
 function getAllPossibleMoves() {
@@ -555,25 +562,25 @@ function getAllPossibleMoves() {
     var possibleMoves = [];
     var iterations = 0;
     //for each possible rotation
-    for (var rots = 0; rots < 4; rots++) {
+    for (var rots = 0; rots &lt; 4; rots++) {
 
         var oldX = [];
         //for each iteration
-        for (var t = -5; t <= 5; t++) {
+        for (var t = -5; t &lt;= 5; t++) {
             iterations++;
             loadState(lastState);
             //rotate shape
-            for (var j = 0; j < rots; j++) {
+            for (var j = 0; j &lt; rots; j++) {
                 rotateShape();
             }
             //move left
-            if (t < 0) {
-                for (var l = 0; l < Math.abs(t); l++) {
+            if (t &lt; 0) {
+                for (var l = 0; l &lt; Math.abs(t); l++) {
                     moveLeft();
                 }
             //move right
             } else if (t > 0) {
-                for (var r = 0; r < t; r++) {
+                for (var r = 0; r &lt; t; r++) {
                     moveRight();
                 }
             }
@@ -629,7 +636,7 @@ function getHighestRatedMove(moves) {
     var maxMove = -1;
     var ties = [];
     //iterate through the list of moves
-    for (var index = 0; index < moves.length; index++) {
+    for (var index = 0; index &lt; moves.length; index++) {
         //if the current moves rating is higher than our maxrating
         if (moves[index].rating > maxRating) {
             //update our max values to include this moves values
@@ -655,6 +662,7 @@ function getHighestRatedMove(moves) {
  */
 function makeNextMove() {
     //increment number of moves taken
+    movesTaken++;
     //if its over the limit of moves
     if (movesTaken > moveLimit) {
         //update this genomes fitness value using the game score
@@ -674,7 +682,7 @@ function makeNextMove() {
         //whats the next shape to play
         nextShape();
         //for each possible move 
-        for (var i = 0; i < possibleMoves.length; i++) {
+        for (var i = 0; i &lt; possibleMoves.length; i++) {
             //get the best move. so were checking all the possible moves, for each possible move. moveception.
             var nextMove = getHighestRatedMove(getAllPossibleMoves());
             //add that rating to an array of highest rates moves
@@ -685,17 +693,17 @@ function makeNextMove() {
         //get the highest rated move ever
         var move = getHighestRatedMove(possibleMoves);
         //then rotate the shape as it says too
-        for (var rotations = 0; rotations < move.rotations; rotations++) {
+        for (var rotations = 0; rotations &lt; move.rotations; rotations++) {
             rotateShape();
         }
         //and move left as it says
-        if (move.translation < 0) {
-            for (var lefts = 0; lefts < Math.abs(move.translation); lefts++) {
+        if (move.translation &lt; 0) {
+            for (var lefts = 0; lefts &lt; Math.abs(move.translation); lefts++) {
                 moveLeft();
             }
             //and right as it says
         } else if (move.translation > 0) {
-            for (var rights = 0; rights < move.translation; rights++) {
+            for (var rights = 0; rights &lt; move.translation; rights++) {
                 moveRight();
             }
         }
@@ -719,20 +727,17 @@ function update() {
     //if we have our AI turned on and the current genome is nonzero
     //make a move
     var results;
-    if (ai && currentGenome != -1) {
+    if (ai &amp;&amp; currentGenome != -1) {
         //move the shape down
         results = moveDown();
-        lines += results.rowsCleared;
         //if that didn't do anything
         if (!results.moved) {
             //if we lost
             if (results.lose) {
                 //update the fitness
                 genomes[currentGenome].fitness = clone(score);
-                aiScore = clone(score);
                 //move on to the next genome
                 evaluateNextGenome();
-                gameOver();
             } else {
                 //if we didnt lose, make the next move
                 makeNextMove();
@@ -741,13 +746,12 @@ function update() {
     } else {
     //else just move down
         results = moveDown();
-        lines += results.rowsCleared;
     }
-    // lines += results.rowsCleared;
     //output the state to the screen
     output();
     //and update the score
     updateScore();
+    lines += results.rowsCleared;
 }
 
 /**
@@ -773,10 +777,15 @@ function moveDown() {
         result.rowsCleared = clearRows();
         //check again if this shape collides with our grid
         if (collides(grid, currentShape)) {
+            //reset
             result.lose = true;
-            if (!ai) {
-                gameOver();
-            }
+            pause = true;
+            gameOver();
+            // if (ai) {
+            //     // pop up gameover screen with replay option
+            // } else {
+            //     gameOver();
+            // }
         }
         result.moved = false;
     }
@@ -834,10 +843,10 @@ function clearRows() {
     //empty array for rows to clear
     var rowsToClear = [];
     //for each row in the grid
-    for (var row = 0; row < grid.length; row++) {
+    for (var row = 0; row &lt; grid.length; row++) {
         var containsEmptySpace = false;
         //for each column
-        for (var col = 0; col < grid[row].length; col++) {
+        for (var col = 0; col &lt; grid[row].length; col++) {
             //if its empty
             if (grid[row][col] === 0) {
                 //set this value to true
@@ -868,7 +877,7 @@ function clearRows() {
         grid.splice(rowsToClear[toClear], 1);
     }
     //shift the other rows
-    while (grid.length < 20) {
+    while (grid.length &lt; 20) {
         grid.unshift([0,0,0,0,0,0,0,0,0,0]);
     }
     //return the rows cleared
@@ -880,8 +889,8 @@ function clearRows() {
  */
 function applyShape() {
     //for each value in the current shape (row x column)
-    for (var row = 0; row < currentShape.shape.length; row++) {
-        for (var col = 0; col < currentShape.shape[row].length; col++) {
+    for (var row = 0; row &lt; currentShape.shape.length; row++) {
+        for (var col = 0; col &lt; currentShape.shape[row].length; col++) {
             //if its non-empty
             if (currentShape.shape[row][col] !== 0) {
                 //set the value in the grid to its value. Stick the shape in the grid!
@@ -896,8 +905,8 @@ function applyShape() {
  */
 //same deal but reverse
 function removeShape() {
-    for (var row = 0; row < currentShape.shape.length; row++) {
-        for (var col = 0; col < currentShape.shape[row].length; col++) {
+    for (var row = 0; row &lt; currentShape.shape.length; row++) {
+        for (var col = 0; col &lt; currentShape.shape[row].length; col++) {
             if (currentShape.shape[row][col] !== 0) {
                 grid[currentShape.y + row][currentShape.x + col] = 0;
             }
@@ -942,7 +951,7 @@ function generateBag() {
     bag = [];
     var contents = "";
     //7 shapes
-    for (var i = 0; i < 7; i++) {
+    for (var i = 0; i &lt; 7; i++) {
         //generate shape randomly
         var shape = randomKey(shapes);
         while(contents.indexOf(shape) != -1) {
@@ -960,6 +969,8 @@ function generateBag() {
  * Resets the game.
  */
 function reset() {
+    score = 0;
+    lines = 0;
     grid = [
         [0,0,0,0,0,0,0,0,0,0],
         [0,0,0,0,0,0,0,0,0,0],
@@ -982,9 +993,8 @@ function reset() {
         [0,0,0,0,0,0,0,0,0,0],
         [0,0,0,0,0,0,0,0,0,0],
     ];
-    score = 0;
-    lines = 0;
     moves = 0;
+    pause = true;
     generateBag();
     nextShape();
 }
@@ -997,8 +1007,8 @@ function reset() {
  */
 function collides(scene, object) {
     //for the size of the shape (row x column)
-    for (var row = 0; row < object.shape.length; row++) {
-        for (var col = 0; col < object.shape[row].length; col++) {
+    for (var row = 0; row &lt; object.shape.length; row++) {
+        for (var col = 0; col &lt; object.shape[row].length; col++) {
             //if its not empty
             if (object.shape[row][col] !== 0) {
                 //if it collides, return true
@@ -1014,11 +1024,11 @@ function collides(scene, object) {
 //for rotating a shape, how many times should we rotate
 function rotate(matrix, times) {
     //for each time
-    for (var t = 0; t < times; t++) {
+    for (var t = 0; t &lt; times; t++) {
         //flip the shape matrix
         matrix = transpose(matrix);
         //and for the length of the matrix, reverse each column
-        for (var i = 0; i < matrix.length; i++) {
+        for (var i = 0; i &lt; matrix.length; i++) {
             matrix[i].reverse();
         }
     }
@@ -1039,19 +1049,19 @@ function transpose(array) {
 function output() {
     if (draw) {
         var output = document.getElementById("output");
-        var space = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
-        var html = "<h1>TETRIS</h1><h4>GROUP 18</h4><br /><font color=#e5534b>var</font> <font color=#539bf5>grid</font> = [";
-        for (var i = 0; i < grid.length; i++) {
+        var space = "&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;";
+        var html = "&lt;h1>TETRIS&lt;/h1>&lt;h4>GROUP 18&lt;/h4>&lt;br />&lt;font color=#e5534b>var&lt;/font> &lt;font color=#539bf5>grid&lt;/font> = [";
+        for (var i = 0; i &lt; grid.length; i++) {
             if (i === 0) {
                 html += "[" + grid[i] + "]";
             } else {
-                html += "<br />" + space + "[" + grid[i] + "]";
+                html += "&lt;br />" + space + "[" + grid[i] + "]";
             }
         }
         html += "];";
-        for (var c = 0; c < colors.length; c++) {
-            html = replaceAll(html, "," + (c + 1), ",<font color=\"" + colors[c] + "\">" + (c + 1) + "</font>");
-            html = replaceAll(html, (c + 1) + ",", "<font color=\"" + colors[c] + "\">" + (c + 1) + "</font>,");
+        for (var c = 0; c &lt; colors.length; c++) {
+            html = replaceAll(html, "," + (c + 1), ",&lt;font color=\"" + colors[c] + "\">" + (c + 1) + "&lt;/font>");
+            html = replaceAll(html, (c + 1) + ",", "&lt;font color=\"" + colors[c] + "\">" + (c + 1) + "&lt;/font>,");
         }
         output.innerHTML = html;
     }
@@ -1063,29 +1073,29 @@ function output() {
 function updateScore() {
     if (draw) {
         var scoreDetails = document.getElementById("score");
-        var html = "<br /><br /><br /><br /><h2>&nbsp;</h2><h2>Score: " + score + "</h2>";
-        html += "<br /><b>--Upcoming Shape--</b>";
-        for (var i = 0; i < upcomingShape.length; i++) {
-            var next =replaceAll((upcomingShape[i] + ""), "0", "&nbsp;");
-            html += "<br />&nbsp;&nbsp;&nbsp;&nbsp;" + next;
+        var html = "&lt;br />&lt;br />&lt;br />&lt;br />&lt;h2>&amp;nbsp;&lt;/h2>&lt;h2>Score: " + score + "&lt;/h2>";
+        html += "&lt;br />&lt;b>--Upcoming Shape--&lt;/b>";
+        for (var i = 0; i &lt; upcomingShape.length; i++) {
+            var next =replaceAll((upcomingShape[i] + ""), "0", "&amp;nbsp;");
+            html += "&lt;br />&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;" + next;
         }
-        for (var l = 0; l < 4 - upcomingShape.length; l++) {
-            html += "<br />";
+        for (var l = 0; l &lt; 4 - upcomingShape.length; l++) {
+            html += "&lt;br />";
         }
-        for (var c = 0; c < colors.length; c++) {
-            html = replaceAll(html, "," + (c + 1), ",<font color=\"" + colors[c] + "\">" + (c + 1) + "</font>");
-            html = replaceAll(html, (c + 1) + ",", "<font color=\"" + colors[c] + "\">" + (c + 1) + "</font>,");
+        for (var c = 0; c &lt; colors.length; c++) {
+            html = replaceAll(html, "," + (c + 1), ",&lt;font color=\"" + colors[c] + "\">" + (c + 1) + "&lt;/font>");
+            html = replaceAll(html, (c + 1) + ",", "&lt;font color=\"" + colors[c] + "\">" + (c + 1) + "&lt;/font>,");
         }
-        html += "<br />Lines: " + lines;
-        html += "<br />Level: " + levels[speedIndex];
-        html += "<br />Type: " + (gameType == "normal" ? "Normal" : "Extended");
-        html += "<br />Mode: " + (gameMode == "player" ? "Player" : "AI");
+        html += "&lt;br />Lines: " + lines;
+        html += "&lt;br />Level: " + levels[speedIndex];
+        html += "&lt;br />Type: " + (gameType ? "Extended" : "Normal");
+        html += "&lt;br />Mode: " + (gameMode ? "AI" : "Player");
         if (ai) {
             if (inspectMoveSelection) {
-                html += "<br /><pre style=\"font-size:12px\">" + JSON.stringify(moveAlgorithm, null, 2) + "</pre>";
+                html += "&lt;br />&lt;pre style=\"font-size:12px\">" + JSON.stringify(moveAlgorithm, null, 2) + "&lt;/pre>";
             }
         }
-        html = replaceAll(replaceAll(replaceAll(html, "&nbsp;,", "&nbsp;&nbsp;"), ",&nbsp;", "&nbsp;&nbsp;"), ",", "&nbsp;");
+        html = replaceAll(replaceAll(replaceAll(html, "&amp;nbsp;,", "&amp;nbsp;&amp;nbsp;"), ",&amp;nbsp;", "&amp;nbsp;&amp;nbsp;"), ",", "&amp;nbsp;");
         scoreDetails.innerHTML = html;
     }
 }
@@ -1130,15 +1140,15 @@ function loadState(state) {
 function getCumulativeHeight() {
     removeShape();
     var peaks = [20,20,20,20,20,20,20,20,20,20];
-    for (var row = 0; row < grid.length; row++) {
-        for (var col = 0; col < grid[row].length; col++) {
-            if (grid[row][col] !== 0 && peaks[col] === 20) {
+    for (var row = 0; row &lt; grid.length; row++) {
+        for (var col = 0; col &lt; grid[row].length; col++) {
+            if (grid[row][col] !== 0 &amp;&amp; peaks[col] === 20) {
                 peaks[col] = row;
             }
         }
     }
     var totalHeight = 0;
-    for (var i = 0; i < peaks.length; i++) {
+    for (var i = 0; i &lt; peaks.length; i++) {
         totalHeight += 20 - peaks[i];
     }
     applyShape();
@@ -1152,16 +1162,16 @@ function getCumulativeHeight() {
 function getHoles() {
     removeShape();
     var peaks = [20,20,20,20,20,20,20,20,20,20];
-    for (var row = 0; row < grid.length; row++) {
-        for (var col = 0; col < grid[row].length; col++) {
-            if (grid[row][col] !== 0 && peaks[col] === 20) {
+    for (var row = 0; row &lt; grid.length; row++) {
+        for (var col = 0; col &lt; grid[row].length; col++) {
+            if (grid[row][col] !== 0 &amp;&amp; peaks[col] === 20) {
                 peaks[col] = row;
             }
         }
     }
     var holes = 0;
-    for (var x = 0; x < peaks.length; x++) {
-        for (var y = peaks[x]; y < grid.length; y++) {
+    for (var x = 0; x &lt; peaks.length; x++) {
+        for (var y = peaks[x]; y &lt; grid.length; y++) {
             if (grid[y][x] === 0) {
                 holes++;
             }
@@ -1179,15 +1189,15 @@ function getHolesArray() {
     var array = clone(grid);
     removeShape();
     var peaks = [20,20,20,20,20,20,20,20,20,20];
-    for (var row = 0; row < grid.length; row++) {
-        for (var col = 0; col < grid[row].length; col++) {
-            if (grid[row][col] !== 0 && peaks[col] === 20) {
+    for (var row = 0; row &lt; grid.length; row++) {
+        for (var col = 0; col &lt; grid[row].length; col++) {
+            if (grid[row][col] !== 0 &amp;&amp; peaks[col] === 20) {
                 peaks[col] = row;
             }
         }
     }
-    for (var x = 0; x < peaks.length; x++) {
-        for (var y = peaks[x]; y < grid.length; y++) {
+    for (var x = 0; x &lt; peaks.length; x++) {
+        for (var y = peaks[x]; y &lt; grid.length; y++) {
             if (grid[y][x] === 0) {
                 array[y][x] = -1;
             }
@@ -1204,16 +1214,16 @@ function getHolesArray() {
 function getRoughness() {
     removeShape();
     var peaks = [20,20,20,20,20,20,20,20,20,20];
-    for (var row = 0; row < grid.length; row++) {
-        for (var col = 0; col < grid[row].length; col++) {
-            if (grid[row][col] !== 0 && peaks[col] === 20) {
+    for (var row = 0; row &lt; grid.length; row++) {
+        for (var col = 0; col &lt; grid[row].length; col++) {
+            if (grid[row][col] !== 0 &amp;&amp; peaks[col] === 20) {
                 peaks[col] = row;
             }
         }
     }
     var roughness = 0;
     var differences = [];
-    for (var i = 0; i < peaks.length - 1; i++) {
+    for (var i = 0; i &lt; peaks.length - 1; i++) {
         roughness += Math.abs(peaks[i] - peaks[i + 1]);
         differences[i] = Math.abs(peaks[i] - peaks[i + 1]);
     }
@@ -1228,9 +1238,9 @@ function getRoughness() {
 function getRelativeHeight() {
     removeShape();
     var peaks = [20,20,20,20,20,20,20,20,20,20];
-    for (var row = 0; row < grid.length; row++) {
-        for (var col = 0; col < grid[row].length; col++) {
-            if (grid[row][col] !== 0 && peaks[col] === 20) {
+    for (var row = 0; row &lt; grid.length; row++) {
+        for (var col = 0; col &lt; grid[row].length; col++) {
+            if (grid[row][col] !== 0 &amp;&amp; peaks[col] === 20) {
                 peaks[col] = row;
             }
         }
@@ -1246,9 +1256,9 @@ function getRelativeHeight() {
 function getHeight() {
     removeShape();
     var peaks = [20,20,20,20,20,20,20,20,20,20];
-    for (var row = 0; row < grid.length; row++) {
-        for (var col = 0; col < grid[row].length; col++) {
-            if (grid[row][col] !== 0 && peaks[col] === 20) {
+    for (var row = 0; row &lt; grid.length; row++) {
+        for (var col = 0; col &lt; grid[row].length; col++) {
+            if (grid[row][col] !== 0 &amp;&amp; peaks[col] === 20) {
                 peaks[col] = row;
             }
         }
@@ -1356,4 +1366,26 @@ function contains(a, obj) {
         }
     }
     return false;
-}
+}</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#applyShape">applyShape</a></li><li><a href="global.html#Card">Card</a></li><li><a href="global.html#clearRows">clearRows</a></li><li><a href="global.html#clone">clone</a></li><li><a href="global.html#collides">collides</a></li><li><a href="global.html#container">container</a></li><li><a href="global.html#createInitialPopulation">createInitialPopulation</a></li><li><a href="global.html#currentShape">currentShape</a></li><li><a href="global.html#evaluateNextGenome">evaluateNextGenome</a></li><li><a href="global.html#evolve">evolve</a></li><li><a href="global.html#generateBag">generateBag</a></li><li><a href="global.html#getAllPossibleMoves">getAllPossibleMoves</a></li><li><a href="global.html#getCumulativeHeight">getCumulativeHeight</a></li><li><a href="global.html#getHeight">getHeight</a></li><li><a href="global.html#getHighestRatedMove">getHighestRatedMove</a></li><li><a href="global.html#getHoles">getHoles</a></li><li><a href="global.html#getHolesArray">getHolesArray</a></li><li><a href="global.html#getRelativeHeight">getRelativeHeight</a></li><li><a href="global.html#getRoughness">getRoughness</a></li><li><a href="global.html#getState">getState</a></li><li><a href="global.html#grid">grid</a></li><li><a href="global.html#initialize">initialize</a></li><li><a href="global.html#Layout">Layout</a></li><li><a href="global.html#loadArchive">loadArchive</a></li><li><a href="global.html#loadState">loadState</a></li><li><a href="global.html#makeChild">makeChild</a></li><li><a href="global.html#makeNextMove">makeNextMove</a></li><li><a href="global.html#moveDown">moveDown</a></li><li><a href="global.html#moveLeft">moveLeft</a></li><li><a href="global.html#moveRight">moveRight</a></li><li><a href="global.html#nextShape">nextShape</a></li><li><a href="global.html#NoMatch">NoMatch</a></li><li><a href="global.html#output">output</a></li><li><a href="global.html#populationSize">populationSize</a></li><li><a href="global.html#randomKey">randomKey</a></li><li><a href="global.html#randomProperty">randomProperty</a></li><li><a href="global.html#removeShape">removeShape</a></li><li><a href="global.html#reset">reset</a></li><li><a href="global.html#rotateShape">rotateShape</a></li><li><a href="global.html#saveConfiguration">saveConfiguration</a></li><li><a href="global.html#Script">Script</a></li><li><a href="global.html#seededRandom">seededRandom</a></li><li><a href="global.html#settings">settings</a></li><li><a href="global.html#shapes">shapes</a></li><li><a href="global.html#update">update</a></li><li><a href="global.html#updateHiscores">updateHiscores</a></li><li><a href="global.html#updateScore">updateScore</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.11</a> on Wed Nov 02 2022 17:47:15 GMT+1100 (Australian Eastern Daylight Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

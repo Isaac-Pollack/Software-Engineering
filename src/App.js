@@ -6,26 +6,34 @@ import Play from './routes/Play'
 import Hiscores from './routes/Hiscores'
 import Configure from './routes/Configure'
 
-// set default scores
+/**
+ * set default scores
+ */
 if(localStorage.getItem('Scores')) {
   console.log('Scores found');
   console.log(localStorage.getItem('Scores'));
 } else {
   console.log('Scores not found');
-  localStorage.setItem('Scores',  JSON.stringify(new Array(10).fill({name: 'NA', hiscore: 0})));
+  // localStorage.setItem('Scores',  JSON.stringify(new Array(10).fill({name: 'NA', hiscore: 0})));
+  localStorage.setItem('Scores',  JSON.stringify([{name: 'NA', hiscore: 0}, {name: 'NA', hiscore: 0}, {name: 'NA', hiscore: 0}, {name: 'NA', hiscore: 0}, {name: 'NA', hiscore: 0}, {name: 'NA', hiscore: 0}, {name: 'NA', hiscore: 0}, {name: 'NA', hiscore: 0}, {name: 'NA', hiscore: 0}, {name: 'NA', hiscore: 0}]));
   console.log(localStorage.getItem('Scores'));
 }
 
-// set default settings
+/**
+ * set default settings
+ */
 if(localStorage.getItem('Settings')) {
   console.log('Settings found');
   console.log(localStorage.getItem('Settings'));
 } else {
   console.log('Settings not found');
-  localStorage.setItem('Settings',  JSON.stringify({gametype: false, gamemode: false, gamelevel: "1", fieldwidth: "10", fieldheight: "20" }));
+  localStorage.setItem('Settings',  JSON.stringify({gametype: 'normal', gamemode: 'player', gamelevel: 1, fieldwidth: 10, fieldheight: 20}));
   console.log(localStorage.getItem('Settings'));
 }
 
+/**
+ * Export the application routes
+ */
 export default function App() {
   return (
     <div>
@@ -42,11 +50,14 @@ export default function App() {
   )
 }
 
+/**
+ * Render the application layout
+ */
 function Layout() {
   return (
     <div>
       <div className='navbar'>
-        <a className="home" href="/"><b>Home</b></a>
+        <a className="home" href="/"><b>TETRIS</b></a>
         <div>
           <ul className="navlist">
             <li className="navplay"><Link to='/play'>Play</Link></li>
@@ -62,6 +73,9 @@ function Layout() {
   )
 }
 
+/**
+ * Link back to homepage on invalid route
+ */
 function NoMatch() {
   return (
     <div>

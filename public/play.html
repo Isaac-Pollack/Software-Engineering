@@ -11,10 +11,10 @@
         <p>Continue Game?</p>
         <ol>
           <li>
-            <button id="yes" class="button" type="button" onclick="">YES</button>
+            <button id="pause-yes" class="yes-btn" type="button" onclick="">YES</button>
           </li>
           <li>
-            <button id="no" class="button" type="button" onclick="window.location.href='http://localhost:3000'">NO</button>
+            <button id="pause-no" class="no-btn" type="button" onclick="window.location.href='http://localhost:3000'">NO</button>
           </li>
         </ol>
       </div>
@@ -22,20 +22,20 @@
     <div id="over" class="panel" hidden>
       <div class="gameover">
         <h1>GAME OVER</h1>
-        <div class="hiscore" hidden>
-          <br /><b><h2>[HISCORE]</h2></b></a>
-          <p>Congratulations! You Scored in the Top 10!</p>
-          <p>Input your name below to add your score to the leaderboard.</p>
+        <div id="hiscore" class="hiscore" hidden>
+          <p><h2>[HISCORE]</h2><p>
+          <p>Congratulations! You have achieved a Top 10 score!</p>
+          <p>Input your name below to add your score to the leaderboard</p>
           <input id="playername" type="text" placeholder="username" required>
           <input id="playersubmit" type="submit">
         </div>
         <p>Play Again?</p>
         <ol>
           <li>
-            <button id="yes" class="button" type="button" onclick="">YES</button>
+            <button id="over-yes" class="yes-btn" type="button" onclick="">YES</button>
           </li>
           <li>
-            <button id="no" class="button" type="button" onclick="window.location.href='http://localhost:3000'">NO</button>
+            <button id="over-no" class="no-btn" type="button" onclick="window.location.href='http://localhost:3000'">NO</button>
           </li>
         </ol>
       </div>
@@ -45,15 +45,22 @@
       <div id="score" class="text"></div>
     </div>
     <div id="instructions" class="text">
-      <div>
-        <br /><h3><b>[Key Commands]</b></h3>
-        Start Game: [ENTER]<br />
+      <div id="player-legend" class="text" hidden>
+        <p><h3><b>[Commands]</b></h3></p>
+        Quit Game: [ESC]<br />
+        Pause Game: [P]<br />
+        Level Up: [W]<br />
+        Level Down: [S]<br />
         Move Left: [LEFT]<br />
         Move Right: [RIGHT]<br />
         Move Down: [DOWN]<br />
         Rotate Shape: [UP]<br />
-        Drop Shape: [SPACE]<br />
-        Pause Game: [ESC]<br />
+        Drop Shape: [SPACE]
+      </div>
+      <div id="ai-legend" class="text" hidden>
+        <p><h3><b>[Commands]</b></h3></p>
+        Quit Game: [ESC]<br />
+        Pause Game: [P]<br />
         Level Up: [W]<br />
         Level Down: [S]<br />
         Inspect AI Move Selection: [F]

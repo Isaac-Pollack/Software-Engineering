@@ -1,5 +1,9 @@
 import { useEffect } from 'react'
 
+/**
+ * React hook for creating script elements in react render function
+ * @param {*} path 
+ */
 const Script = path => {
   useEffect(() => {
     const scriptElem = document.createElement('script');

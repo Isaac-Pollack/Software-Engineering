@@ -1,9 +1,13 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
-//Icons
 import { FaLinkedin, FaGithub } from 'react-icons/fa'
 
+/**
+ * React function for displaying github profile cards
+ * @param {*} props 
+ * @returns JSX.Element
+ */
 function Card(props) {
   const name = props.name
   const avatar = props.avatar

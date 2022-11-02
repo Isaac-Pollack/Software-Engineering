@@ -1,13 +1,17 @@
 import * as React from 'react'
-// import { Link } from 'react-router-dom'
 
+/**
+ * Export Play route and redirect to play.html for tetris gameplay with play.js
+ * @returns JSX.Element
+ */
 export default function Play() {
   return(
     <head>
       <meta httpEquiv='refresh' content='0; url=play.html'/>
-      {/* <meta httpEquiv='refresh' content='0; url={process.env.PUBLIC_URL + "play.html"}'/> */}
     </head>
-
+  )
+}
+    /* <meta httpEquiv='refresh' content='0; url={process.env.PUBLIC_URL + "play.html"}'/> */
     // <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 
     // <body onload="window.location = 'http://example.com/'">
@@ -60,5 +64,3 @@ export default function Play() {
     //   <body onload="init()">
     //   </body>
     // </html>
-  )
-}

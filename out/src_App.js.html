@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: src/App.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: src/App.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import React from 'react'
+import { Routes, Route, Outlet, Link } from 'react-router-dom'
+
+import Home from './routes/Home'
+import Play from './routes/Play'
+import Hiscores from './routes/Hiscores'
+import Configure from './routes/Configure'
+
+/**
+ * set default scores
+ */
+if(localStorage.getItem('Scores')) {
+  console.log('Scores found');
+  console.log(localStorage.getItem('Scores'));
+} else {
+  console.log('Scores not found');
+  localStorage.setItem('Scores',  JSON.stringify(new Array(10).fill({name: 'NA', hiscore: 0})));
+  console.log(localStorage.getItem('Scores'));
+}
+
+/**
+ * set default settings
+ */
+if(localStorage.getItem('Settings')) {
+  console.log('Settings found');
+  console.log(localStorage.getItem('Settings'));
+} else {
+  console.log('Settings not found');
+  localStorage.setItem('Settings',  JSON.stringify({gametype: false, gamemode: false, gamelevel: "1", fieldwidth: "10", fieldheight: "20" }));
+  console.log(localStorage.getItem('Settings'));
+}
+
+/**
+ * Export the application routes
+ */
+export default function App() {
+  return (
+    &lt;div>
+      &lt;Routes>
+        &lt;Route path='/' element={&lt;Layout />}>
+          &lt;Route index element={&lt;Home />} />
+          &lt;Route path='play' element={&lt;Play />} />
+          &lt;Route path='hiscores' element={&lt;Hiscores />} />
+          &lt;Route path='configure' element={&lt;Configure />} />
+          &lt;Route path='*' element={&lt;NoMatch />} />
+        &lt;/Route>
+      &lt;/Routes>
+    &lt;/div>
+  )
+}
+
+/**
+ * Render the application layout
+ */
+function Layout() {
+  return (
+    &lt;div>
+      &lt;div className='navbar'>
+        &lt;a className="home" href="/">&lt;b>Home&lt;/b>&lt;/a>
+        &lt;div>
+          &lt;ul className="navlist">
+            &lt;li className="navplay">&lt;Link to='/play'>Play&lt;/Link>&lt;/li>
+            &lt;li className="navhiscores">&lt;Link to='/hiscores'>Hiscores&lt;/Link>&lt;/li>
+            &lt;li className="navconfigure">&lt;Link to='/configure'>Configure&lt;/Link>&lt;/li>
+          &lt;/ul>
+        &lt;/div>
+      &lt;/div>
+      &lt;main className='Outlet'>
+        &lt;Outlet />
+      &lt;/main>
+  &lt;/div>
+  )
+}
+
+/**
+ * Link back to homepage on invalid route
+ */
+function NoMatch() {
+  return (
+    &lt;div>
+      &lt;h2>Nothing to see here!&lt;/h2>
+      &lt;p>
+        &lt;Link to='/'>Go to the home page&lt;/Link>
+      &lt;/p>
+    &lt;/div>
+  )
+}
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#applyShape">applyShape</a></li><li><a href="global.html#Card">Card</a></li><li><a href="global.html#clearRows">clearRows</a></li><li><a href="global.html#clone">clone</a></li><li><a href="global.html#collides">collides</a></li><li><a href="global.html#container">container</a></li><li><a href="global.html#createInitialPopulation">createInitialPopulation</a></li><li><a href="global.html#currentShape">currentShape</a></li><li><a href="global.html#evaluateNextGenome">evaluateNextGenome</a></li><li><a href="global.html#evolve">evolve</a></li><li><a href="global.html#generateBag">generateBag</a></li><li><a href="global.html#getAllPossibleMoves">getAllPossibleMoves</a></li><li><a href="global.html#getCumulativeHeight">getCumulativeHeight</a></li><li><a href="global.html#getHeight">getHeight</a></li><li><a href="global.html#getHighestRatedMove">getHighestRatedMove</a></li><li><a href="global.html#getHoles">getHoles</a></li><li><a href="global.html#getHolesArray">getHolesArray</a></li><li><a href="global.html#getRelativeHeight">getRelativeHeight</a></li><li><a href="global.html#getRoughness">getRoughness</a></li><li><a href="global.html#getState">getState</a></li><li><a href="global.html#grid">grid</a></li><li><a href="global.html#initialize">initialize</a></li><li><a href="global.html#Layout">Layout</a></li><li><a href="global.html#loadArchive">loadArchive</a></li><li><a href="global.html#loadState">loadState</a></li><li><a href="global.html#makeChild">makeChild</a></li><li><a href="global.html#makeNextMove">makeNextMove</a></li><li><a href="global.html#moveDown">moveDown</a></li><li><a href="global.html#moveLeft">moveLeft</a></li><li><a href="global.html#moveRight">moveRight</a></li><li><a href="global.html#nextShape">nextShape</a></li><li><a href="global.html#NoMatch">NoMatch</a></li><li><a href="global.html#output">output</a></li><li><a href="global.html#populationSize">populationSize</a></li><li><a href="global.html#randomKey">randomKey</a></li><li><a href="global.html#randomProperty">randomProperty</a></li><li><a href="global.html#removeShape">removeShape</a></li><li><a href="global.html#reset">reset</a></li><li><a href="global.html#rotateShape">rotateShape</a></li><li><a href="global.html#saveConfiguration">saveConfiguration</a></li><li><a href="global.html#Script">Script</a></li><li><a href="global.html#seededRandom">seededRandom</a></li><li><a href="global.html#settings">settings</a></li><li><a href="global.html#shapes">shapes</a></li><li><a href="global.html#update">update</a></li><li><a href="global.html#updateHiscores">updateHiscores</a></li><li><a href="global.html#updateScore">updateScore</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.11</a> on Wed Nov 02 2022 17:47:15 GMT+1100 (Australian Eastern Daylight Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

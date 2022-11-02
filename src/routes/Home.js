@@ -1,6 +1,10 @@
 import * as React from 'react'
 import { Link } from 'react-router-dom'
 
+/**
+ * Export Home route and render Home page
+ * @returns JSX.Element
+ */
 export default function Home() {
   return (
     <div>

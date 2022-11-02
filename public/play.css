@@ -63,10 +63,10 @@ body {
 
 .paused,
 .gameover,
-.highscore {
+.hiscore {
   margin: 5% auto;
   width: 75%;
-  height: 80%;
+  height: 50%;
   box-sizing: border-box;
   position: relative;
   text-align: center;
@@ -76,7 +76,7 @@ body {
 
 .paused a,
 .gameover a,
-.highscore a {
+.hiscore a {
   position: relative;
   justify-content: space-between;
   text-align: center;
@@ -90,7 +90,7 @@ li {
   align-items: center;
 }
 
-.button {
+button {
   position: relative;
   bottom: 15%;
   display: inline-block;
@@ -111,22 +111,22 @@ li {
   cursor: pointer;
 }
 
-.button:hover {
+button:hover {
   filter: brightness(80%);
   transition: background .12s ease-out,color .12s ease-out;
 }
 
-.button:active {
+button:active {
   box-shadow: none;
   transition: transform .12s ease-out,background .12s ease-out,color .12s ease-out;
   transform: translate3d(0,2px,0);
 }
 
-#yes {
+.yes-btn {
   background-color: var(--success);
 }
 
-#no {
+.no-btn {
   background-color: var(--danger);
 }
 
