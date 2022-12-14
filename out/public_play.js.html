@@ -19,11 +19,11 @@
 
     <h1 class="page-title">Source: public/play.js</h1>
 
-    
 
 
 
-    
+
+
     <section>
         <article>
             <pre class="prettyprint source linenums"><code>/**
@@ -155,14 +155,14 @@ var movesTaken = 0;
 var moveLimit = 500;
 //consists of move the 7 move parameters
 var moveAlgorithm = {};
-//set to highest rate move 
+//set to highest rate move
 var inspectMoveSelection = false;
 
 
 /**
  * Genetic algorithm values, used to mutate the AI behaviour
  */
-//stores number of genomes, init at 50 
+//stores number of genomes, init at 50
 var populationSize = 50;
 //stores genomes
 var genomes = [];
@@ -199,7 +199,7 @@ function initialize() {
     //create an initial population of genomes
     // createInitialPopulation();
     loadArchive("ai.js")
-    
+
     // main game loop
     var loop = function(){
         // while (pause === true) {
@@ -321,7 +321,7 @@ function pauseGame(ms) {
 }
 
 // async function wait() {
-    
+
 // }
 
 function pauseMenu() {
@@ -422,7 +422,7 @@ function createInitialPopulation() {
             relativeHeight: Math.random() - 0.5,
             //the sum of all the empty cells that have a block above them (basically, cells that are unable to be filled)
             holes: Math.random() * 0.5,
-            // the sum of absolute differences between the height of each column 
+            // the sum of absolute differences between the height of each column
             //(for example, if all the shapes on the grid lie completely flat, then the roughness would equal 0).
             roughness: Math.random() - 0.5,
         };
@@ -681,7 +681,7 @@ function makeNextMove() {
         var lastState = getState();
         //whats the next shape to play
         nextShape();
-        //for each possible move 
+        //for each possible move
         for (var i = 0; i &lt; possibleMoves.length; i++) {
             //get the best move. so were checking all the possible moves, for each possible move. moveception.
             var nextMove = getHighestRatedMove(getAllPossibleMoves());
@@ -769,7 +769,7 @@ function moveDown() {
     if (collides(grid, currentShape)) {
         //update its position
         currentShape.y--;
-        //apply (stick) it to the grid 
+        //apply (stick) it to the grid
         applyShape();
         //move on to the next shape in the bag
         nextShape();

@@ -2,7 +2,8 @@
   "env": {
     "browser": true,
     "es2021": true,
-    "node": true
+    "node": true,
+    "jest": true
   },
   "extends": [
     "eslint:recommended",
@@ -16,7 +17,11 @@
     "ecmaVersion": "latest",
     "sourceType": "module"
   },
-  "plugins": ["react", "testing-library", "jest-dom"],
+  "plugins": [
+    "react",
+    "testing-library",
+    "jest-dom"
+  ],
   "rules": {
     "testing-library/no-render-in-setup": "error",
     "testing-library/no-wait-for-empty-callback": "error",
